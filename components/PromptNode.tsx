@@ -42,40 +42,14 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   );
 
   return (
-    <div
-      style={{
-        height: 'max-content',
-        border: '1px solid #eee',
-        borderRadius: 5,
-        borderColor: 'black',
-        gap: '10px',
-        display: 'block',
-        justifyContent: 'center',
-        placeItems: 'center',
-        textAlign: 'start',
-        width: '350px',
-        maxWidth: '350px',
-
-        padding: 20,
-        background: 'white',
-      }}
-    >
+    <div className='h-max border rounded-md border-black gap-2.5 block justify-center items-center text-left w-[350px] max-w-[350px] p-5 bg-white'>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <label style={{ fontSize: 32, display: 'block' }} htmlFor='text'>
           {data.topic}
         </label>
         <p>{data.description}</p>
         <h3>Subtopics</h3>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '350px',
-            maxWidth: '350px',
-            alignSelf: 'center',
-            placeItems: 'center',
-          }}
-        >
+        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
           {data.subtopics
             ? //@ts-expect-error
               data.subtopics.map((topic) => {
@@ -158,24 +132,16 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                         })
                       );
                     }}
-                    content={topic}
                     key={topic}
-                  />
+                  >
+                    {topic}
+                  </Button>
                 );
               })
             : null}
         </div>
         <h3>Test yourself:</h3>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '350px',
-            maxWidth: '350px',
-            alignSelf: 'center',
-            placeItems: 'center',
-          }}
-        >
+        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
           {data.questions
             ? //@ts-expect-error
               data.questions.map((question) => {
@@ -233,30 +199,21 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                       console.log('REASSIGNED EDGES:', edges);
                       console.log('EDGES POST FETCH', edges);
                     }}
-                    content={question.q}
                     key={question.q}
-                  />
+                  >
+                    {question.q}
+                  </Button>
                 );
               })
             : null}
         </div>
         <h3>I&apos;m confused about...</h3>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '350px',
-            maxWidth: '350px',
-            alignSelf: 'center',
-            placeItems: 'center',
-          }}
-        >
+        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
           {data.im_confused
             ? //@ts-expect-error
               data.im_confused.map((item) => {
                 return (
                   <Button
-                    content={item}
                     key={item}
                     onClick={async () => {
                       console.log(prompt);
@@ -321,13 +278,17 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                         })
                       );
                     }}
-                  />
+                  >
+                    {item}
+                  </Button>
                 );
               })
             : null}
         </div>
+
         {isLoading ? (
-          <div style={{ placeSelf: 'center' }} className='spinner'></div>
+          //Replace w tailwind spinner
+          <div className='place-self-center spinner'></div>
         ) : null}
         {/* <textarea
           rows={10}
