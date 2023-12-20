@@ -9,9 +9,10 @@ import {
   useEdges,
   useReactFlow,
 } from 'reactflow';
-import Button from './ui/button';
+import { Button } from './ui/button';
 import { initialNodes } from './Flow';
 import './spinner.css';
+import { Textarea } from './ui/textarea';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -41,38 +42,13 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   console.log(edges);
 
   return (
-    <div
-      className=''
-      style={{
-        height: 'max-content',
-        border: '1px solid #eee',
-        borderRadius: 5,
-        borderColor: 'black',
-        padding: 16,
-        gap: 10,
-        background: 'white',
-        justifyItems: 'center',
-        alignItems: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          justifyItems: 'center',
-        }}
-      >
-        <label
-          style={{ fontSize: 32, display: 'block', inlineSize: 200 }}
-          htmlFor='text'
-        >
+    <div className='h-max border border-black rounded-md p-4 gap-2.5 bg-white justify-center items-center flex flex-col'>
+      <div className='flex flex-col justify-center items-center'>
+        <label className='text-3xl block w-50' htmlFor='text'>
           {data.question}
         </label>
 
-        <textarea
+        <Textarea
           //@ts-expect-error
           value={prompt}
           onChangeCapture={(e) => {
@@ -91,7 +67,6 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         />
       </div>
       <Button
-        content='Ask'
         onClick={async () => {
           console.log(prompt);
           setLoading(true);
@@ -158,7 +133,9 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           console.log('this is message', message);
           setLoading(false);
         }}
-      />
+      >
+        Ask
+      </Button>
 
       {isLoading ? (
         <div style={{ placeSelf: 'center' }} className='spinner'></div>

@@ -9,7 +9,7 @@ import {
   useEdges,
   useReactFlow,
 } from 'reactflow';
-import Button from './ui/button';
+import { Button } from './ui/button';
 import { initialNodes } from './Flow';
 
 type TextNodeProps = NodeProps & {

@@ -10,7 +10,7 @@ import {
   useEdges,
   useReactFlow,
 } from 'reactflow';
-import Button from './ui/button';
+import { Button } from './ui/button';
 import { initialNodes } from './Flow';
 
 // Clean up bad state controls
