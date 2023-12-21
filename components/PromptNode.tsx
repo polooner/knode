@@ -43,8 +43,8 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
 
   return (
     <div className='h-max border rounded-md border-black gap-2.5 block justify-center items-center text-left w-[350px] max-w-[350px] p-5 bg-white'>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <label style={{ fontSize: 32, display: 'block' }} htmlFor='text'>
+      <div className='flex flex-col gap-2.5'>
+        <label className='block text-3xl' htmlFor='text'>
           {data.topic}
         </label>
         <p>{data.description}</p>

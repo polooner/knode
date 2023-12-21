@@ -11,8 +11,8 @@ import {
 } from 'reactflow';
 import { Button } from './ui/button';
 import { initialNodes } from './Flow';
-import './spinner.css';
 import { Textarea } from './ui/textarea';
+import Spinner from './ui/spinner';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -21,8 +21,6 @@ type TextNodeProps = NodeProps & {
   parent: {};
 };
 //@ts-expect-error
-
-//TODO: Make tailwind work :(
 
 const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   console.log(id);
@@ -49,21 +47,15 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         </label>
 
         <Textarea
-          //@ts-expect-error
-          value={prompt}
+          value={prompt as any}
           onChangeCapture={(e) => {
             setPrompt(e.currentTarget.value);
           }}
           rows={5}
-          style={{
-            borderRadius: 5,
-            height: 'max-content',
-            width: '100%',
-          }}
+          className='rounded-md h-max w-full no-drag'
           id='text'
           name='text'
           onChange={onChange}
-          className='nodrag'
         />
       </div>
       <Button
@@ -137,10 +129,8 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         Ask
       </Button>
 
-      {isLoading ? (
-        <div style={{ placeSelf: 'center' }} className='spinner'></div>
-      ) : null}
-      {message ? <p style={{ width: '200px' }}>{message}</p> : null}
+      {isLoading ? <Spinner /> : null}
+      {message ? <p className='w-[200px]'>{message}</p> : null}
 
       <Handle
         type='source'

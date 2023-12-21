@@ -12,6 +12,8 @@ import {
 } from 'reactflow';
 import { Button } from './ui/button';
 import { initialNodes } from './Flow';
+import { Textarea } from './ui/textarea';
+import Spinner from './ui/spinner';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -40,55 +42,26 @@ const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   );
 
   return (
-    <div
-      style={{
-        height: 'max-content',
-        border: '1px solid #eee',
-        borderRadius: 5,
-        borderColor: 'black',
-        gap: '10px',
-        display: 'block',
-        justifyContent: 'center',
-        placeItems: 'center',
-        textAlign: 'start',
-        width: '350px',
-        maxWidth: '350px',
-
-        padding: 20,
-        background: 'white',
-      }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <label style={{ fontSize: 32, display: 'block' }} htmlFor='text'>
+    <div className='h-max border rounded-md border-black gap-2.5 block text-left w-[350px] max-w-[350px] p-5 bg-white'>
+      <div className='flex flex-col gap-2.5'>
+        <label className='text-3xl block' htmlFor='text'>
           {data.q}
         </label>
-        <textarea
+        <Textarea
           //@ts-expect-error
           value={answer}
           onChangeCapture={(e) => {
             setAnswer(e.currentTarget.value);
           }}
           rows={10}
-          style={{ borderRadius: 5, height: 'max-content' }}
           id='text'
           name='text'
           onChange={onChange}
-          className='nodrag'
+          className='nodrag rounded-md h-max'
         />
 
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '350px',
-            gap: '10px',
-            maxWidth: '350px',
-            alignSelf: 'center',
-            placeItems: 'center',
-          }}
-        >
+        <div className='flex flex-col w-[350px] gap-2.5 max-w-[350px] self-center place-items-center'>
           <Button
-            content='Check my answer!'
             style={{ gap: 10 }}
             key={id}
             onClick={async () => {
@@ -107,29 +80,30 @@ const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                 })
               );
             }}
-          />
+          >
+            Check my answer!
+          </Button>
           <Button
-            content='Show answer'
             key={id}
             onClick={() => {
               setShowAnswer(!isAnswer);
             }}
-          />
+          >
+            Show answer
+          </Button>
         </div>
-        {isLoading ? (
-          <div style={{ placeSelf: 'center' }} className='spinner'></div>
-        ) : null}
+        {isLoading ? <Spinner /> : null}
         {isAnswer ? (
-          <label style={{ width: '100%' }}>
+          <label className='w-full'>
             Answer:
-            <hr style={{ width: '100%' }} />
+            <hr className='w-full' />
             <p>{data.a}</p>
           </label>
         ) : null}
         {feedback ? (
-          <label style={{ width: '100%' }}>
+          <label className='w-full'>
             Feedback
-            <hr style={{ width: '100%' }} />
+            <hr className='w-full' />
             <p>{feedback}</p>
           </label>
         ) : null}

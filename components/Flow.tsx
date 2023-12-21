@@ -62,12 +62,22 @@ export const initialNodes: Node[] = [
       a: 'Some answer',
     },
   },
+  {
+    id: '4',
+    type: 'confusedNode',
+    position: { x: 0, y: 400 },
+    data: {
+      topic: 'Testing',
+      description: 'this is a good description of a questionnode',
+    },
+  },
 ];
 
 const initialEdges: Edge[] = [
   { id: 'edge-1', source: '1', target: '2' },
   { id: 'edge-2', source: '1', target: '2' },
   { id: 'edge-3', source: '2', target: '3' },
+  { id: 'edge-4', source: '1', target: '4' },
 ];
 
 const nodeTypes = {

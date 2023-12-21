@@ -18,18 +18,12 @@ import { initialNodes } from './Flow';
 type TextNodeProps = NodeProps & {
   title: string;
   description: string;
-  subtopics: string[];
-  questions: string[];
-  im_confused: string[];
   position: { x: number; y: number };
   parent: {};
 };
 //@ts-expect-error
 const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
-  console.log('ID OF NODE IS---------', id);
-  console.log('number of nodes', initialNodes.length);
   console.log('CONFUSED NODE X, Y POS', xPos, yPos);
-  const [message, setMessage] = useState<string | null>();
   const [prompt, setPrompt] = useState<string | null>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const { setEdges } = useReactFlow();
@@ -46,42 +40,15 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   );
 
   return (
-    <div
-      style={{
-        height: 'max-content',
-        border: '1px solid #eee',
-        borderRadius: 5,
-        borderColor: 'black',
-        gap: '10px',
-        display: 'block',
-        justifyContent: 'center',
-        placeItems: 'center',
-        textAlign: 'start',
-        width: '350px',
-        maxWidth: '350px',
-
-        padding: 20,
-        background: 'white',
-      }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <label style={{ fontSize: 32, display: 'block' }} htmlFor='text'>
+    <div className='h-max border rounded-md border-black gap-2.5 block text-left w-[350px] max-w-[350px] p-5 bg-white'>
+      <div className='flex flex-col gap-2.5'>
+        <label className='text-[32px] block' htmlFor='text'>
           {data.topic}
         </label>
         <p>{data.description}</p>
 
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '350px',
-            maxWidth: '350px',
-            alignSelf: 'center',
-            placeItems: 'center',
-          }}
-        >
+        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
           <Button
-            content='Still confused'
             key={id}
             onClick={async () => {
               console.log(prompt);
@@ -150,7 +117,9 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                 })
               );
             }}
-          />
+          >
+            Still confused
+          </Button>
         </div>
       </div>
       <Handle
