@@ -12,6 +12,7 @@ import {
 } from 'reactflow';
 import { Button } from './ui/button';
 import { initialNodes } from './Flow';
+import { Separator } from './ui/separator';
 
 // Clean up bad state controls
 
@@ -46,7 +47,7 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           {data.topic}
         </label>
         <p>{data.description}</p>
-
+        <Separator />
         <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
           <Button
             key={id}

@@ -11,6 +11,7 @@ import {
 } from 'reactflow';
 import { Button } from './ui/button';
 import { initialNodes } from './Flow';
+import { Separator } from './ui/separator';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -49,7 +50,8 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         </label>
         <p>{data.description}</p>
         <h3>Subtopics</h3>
-        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
+        <Separator />
+        <div className='flex flex-col gap-2.5 w-[350px] max-w-[350px] self-center items-center'>
           {data.subtopics
             ? //@ts-expect-error
               data.subtopics.map((topic) => {
@@ -141,7 +143,8 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             : null}
         </div>
         <h3>Test yourself:</h3>
-        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
+        <Separator />
+        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center gap-2.5'>
           {data.questions
             ? //@ts-expect-error
               data.questions.map((question) => {
@@ -208,7 +211,8 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             : null}
         </div>
         <h3>I&apos;m confused about...</h3>
-        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
+        <Separator />
+        <div className='flex gap-2.5 flex-col w-[350px] max-w-[350px] self-center items-center'>
           {data.im_confused
             ? //@ts-expect-error
               data.im_confused.map((item) => {

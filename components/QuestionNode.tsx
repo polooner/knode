@@ -14,6 +14,7 @@ import { Button } from './ui/button';
 import { initialNodes } from './Flow';
 import { Textarea } from './ui/textarea';
 import Spinner from './ui/spinner';
+import { Separator } from './ui/separator';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -42,11 +43,12 @@ const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   );
 
   return (
-    <div className='h-max border rounded-md border-black gap-2.5 block text-left w-[350px] max-w-[350px] p-5 bg-white'>
+    <div className='h-max border rounded-md border-black gap-2.5 block justify-center items-center text-left w-[350px] max-w-[350px] p-5 bg-white'>
       <div className='flex flex-col gap-2.5'>
         <label className='text-3xl block' htmlFor='text'>
           {data.q}
         </label>
+        <Separator />
         <Textarea
           //@ts-expect-error
           value={answer}
@@ -57,7 +59,7 @@ const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           id='text'
           name='text'
           onChange={onChange}
-          className='nodrag rounded-md h-max'
+          className=' rounded-md h-max'
         />
 
         <div className='flex flex-col w-[350px] gap-2.5 max-w-[350px] self-center place-items-center'>
