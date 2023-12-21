@@ -5,7 +5,7 @@ import Flow from '@/components/Flow';
 
 export default function Page({ ...rest }) {
   return (
-    <div style={{ height: '100vh', width: '140vh' }}>
+    <div className='w-screen h-screen'>
       <Flow />
     </div>
   );

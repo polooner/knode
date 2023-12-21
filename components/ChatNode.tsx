@@ -6,6 +6,7 @@ import {
   MarkerType,
   NodeProps,
   Position,
+  addEdge,
   useEdges,
   useReactFlow,
 } from 'reactflow';
@@ -73,53 +74,46 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                   .json()
                   .then((json) => {
                     const node = JSON.parse(json.data);
+
                     console.log('THIS IS CLIENT JSON', json.data);
 
-                    node[
-                      Object.keys(node)[Object.keys(node).length - 1]
-                    ].position['x'] = xPos + 400;
+                    const lastKey = Object.keys(node).pop() as string;
+                    node[lastKey].position['x'] = xPos + 400;
 
-                    console.log(
-                      'XPOS OF NODE: ',
-                      node[Object.keys(node)[Object.keys(node).length - 1]]
-                        .position['x']
-                    );
+                    console.log('XPOS OF NODE: ', node[lastKey].position['x']);
 
-                    Object.assign(initialNodes, node);
-                    setNodes(initialNodes);
+                    setNodes((nds) => nds.concat(node[lastKey]));
+
                     console.log('this is initial nodes', initialNodes);
-                    console.log(
-                      'THE DESTRUCTURED NODE:',
-                      node[Object.keys(node)[Object.keys(node).length - 1]]
-                    );
-                    const keyOfNewEdge = Object.keys(edges).length;
-                    const obj = {};
-                    const newEdge = {
-                      id: `edge1-${
-                        node[Object.keys(node)[Object.keys(node).length - 1]].id
-                      }`,
-                      source: id,
-                      //there's 2 empty objects?
-                      target:
-                        node[Object.keys(node)[Object.keys(node).length - 1]]
-                          .id,
-                      markerEnd: {
-                        type: MarkerType.ArrowClosed,
-                        width: 20,
-                        height: 20,
-                        color: '#000000',
-                      },
-                      // label: 'marker size and color',
-                      style: {
-                        strokeWidth: 2,
-                        stroke: '#000000',
-                      },
-                    };
-                    //@ts-expect-error
-                    obj[keyOfNewEdge] = newEdge;
+                    console.log('THE DESTRUCTURED NODE:', node[lastKey]);
 
-                    Object.assign(edges, obj);
-                    setEdges(edges);
+                    const keyOfNewEdge = Object.keys(edges).length;
+                    // const obj = {};
+                    // const newEdge = {
+                    //   id: `edge1-${
+                    //     node[lastKey].id
+                    //   }`,
+                    //   source: id,
+                    //   //there's 2 empty objects?
+                    //   target:
+                    //     node[lastKey].id
+                    //   markerEnd: {
+                    //     type: MarkerType.ArrowClosed,
+                    //     width: 20,
+                    //     height: 20,
+                    //     color: '#000000',
+                    //   },
+                    //   // label: 'marker size and color',
+                    //   style: {
+                    //     strokeWidth: 2,
+                    //     stroke: '#000000',
+                    //   },
+                    // };
+                    // //@ts-expect-error
+                    // obj[keyOfNewEdge] = newEdge;
+
+                    // Object.assign(edges, obj);
+                    // setEdges(edges);
                   })
                   .catch((e) => {
                     console.log(e);
@@ -134,8 +128,11 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           </Button>
         </div>
       </div>
-      {isLoading ? <Spinner /> : null}
-      {message ? <p className='w-[200px]'>{message}</p> : null}
+
+      <div className='flex justify-center'>
+        {isLoading ? <Spinner /> : null}
+      </div>
+      {message ? <p className=' w-[200px]'>{message}</p> : null}
 
       <Handle
         type='source'

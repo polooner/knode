@@ -59,7 +59,7 @@ const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           id='text'
           name='text'
           onChange={onChange}
-          className=' rounded-md h-max'
+          className='nodrag rounded-md h-max'
         />
 
         <div className='flex flex-col w-[350px] gap-2.5 max-w-[350px] self-center place-items-center'>

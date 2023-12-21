@@ -8,11 +8,13 @@ import { NextResponse } from 'next/server';
 
 // Openrouter.ai api returns the
 function cleanJsonWrapper(inputText: string) {
-  if (inputText.startsWith('```json') && inputText.endsWith('```')) {
-    return inputText.substring(7, inputText.length - 3).trim();
-  } else {
-    return inputText;
-  }
+  //FIXME: the safe way does not work, if openrouter fixes the json string return this will break
+  // if (inputText.startsWith('```json') && inputText.endsWith('```')) {
+  //   return inputText.substring(7, inputText.length - 3).trim();
+  // } else {
+  //   return inputText;
+  // }
+  return inputText.substring(7, inputText.length - 3).trim();
 }
 
 export async function POST(req: Request) {
@@ -45,8 +47,8 @@ export async function POST(req: Request) {
 
             {
 
-              "{DEFINE ID BUT IN "STRING" FORM! +1 HIGHER THAN NUMBER GIVEN}": {
-                "THE ID AGAIN": {number},
+              {DEFINE ID IN INT TYPE! +1 HIGHER THAN NUMBER GIVEN}: {
+                id: {SAME ID BUT OF string TYPE},
                 "type": "promptNode",
                 "position": { "x": 0, "y": 0 },
                 "data": {
@@ -75,7 +77,7 @@ export async function POST(req: Request) {
     completion.choices[0].message.content as string
   );
 
-  console.log('this is cleaed response', cleanedResponse);
+  console.log('normalized response', cleanedResponse);
 
   return NextResponse.json(
     {
