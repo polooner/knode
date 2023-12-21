@@ -15,6 +15,7 @@ import { initialNodes } from './Flow';
 import { Textarea } from './ui/textarea';
 import Spinner from './ui/spinner';
 import { Separator } from './ui/separator';
+import toast from 'react-hot-toast';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -66,8 +67,13 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             onClick={async () => {
               console.log(prompt);
               setLoading(true);
+
               await fetch('/api/mixtral', {
-                body: JSON.stringify({ prompt: prompt, temperature: 0.1 }),
+                body: JSON.stringify({
+                  prompt: prompt,
+                  temperature: 0.1,
+                  id,
+                }),
                 method: 'POST',
               }).then((res) =>
                 res
@@ -83,44 +89,62 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                     console.log('XPOS OF NODE: ', node[lastKey].position['x']);
 
                     setNodes((nds) => nds.concat(node[lastKey]));
-
-                    console.log('this is initial nodes', initialNodes);
                     console.log('THE DESTRUCTURED NODE:', node[lastKey]);
+                    console.log('new node id:', node[lastKey]['id']);
 
+                    setEdges((eds) =>
+                      addEdge(
+                        {
+                          id: `edge1-${node[lastKey]['id']}`,
+                          source: String(id),
+                          //there's 2 empty objects?
+                          target: String(node[lastKey]['id']),
+                          markerEnd: {
+                            type: MarkerType.ArrowClosed,
+                            width: 20,
+                            height: 20,
+                            color: '#000000',
+                          },
+                          // label: 'marker size and color',
+                          style: {
+                            strokeWidth: 2,
+                            stroke: '#000000',
+                          },
+                        },
+                        eds
+                      )
+                    );
                     const keyOfNewEdge = Object.keys(edges).length;
-                    // const obj = {};
-                    // const newEdge = {
-                    //   id: `edge1-${
-                    //     node[lastKey].id
-                    //   }`,
-                    //   source: id,
-                    //   //there's 2 empty objects?
-                    //   target:
-                    //     node[lastKey].id
-                    //   markerEnd: {
-                    //     type: MarkerType.ArrowClosed,
-                    //     width: 20,
-                    //     height: 20,
-                    //     color: '#000000',
-                    //   },
-                    //   // label: 'marker size and color',
-                    //   style: {
-                    //     strokeWidth: 2,
-                    //     stroke: '#000000',
-                    //   },
-                    // };
-                    // //@ts-expect-error
-                    // obj[keyOfNewEdge] = newEdge;
+                    const obj = {};
+                    const newEdge = {
+                      id: `edge1-${node[lastKey].id}`,
+                      source: id,
+                      //there's 2 empty objects?
+                      target: node[lastKey].id,
+                      markerEnd: {
+                        type: MarkerType.ArrowClosed,
+                        width: 20,
+                        height: 20,
+                        color: '#000000',
+                      },
+                      // label: 'marker size and color',
+                      style: {
+                        strokeWidth: 2,
+                        stroke: '#000000',
+                      },
+                    };
+                    //@ts-expect-error
+                    obj[keyOfNewEdge] = newEdge;
 
-                    // Object.assign(edges, obj);
-                    // setEdges(edges);
+                    Object.assign(edges, obj);
+                    setEdges(edges);
+                    console.log('edges after setEdges', edges);
                   })
                   .catch((e) => {
-                    console.log(e);
+                    toast(e as string);
                   })
               );
 
-              console.log('this is message', message);
               setLoading(false);
             }}
           >

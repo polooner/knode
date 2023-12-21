@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { twMerge } from 'tailwind-merge';
 import 'reactflow/dist/style.css';
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,6 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
+      <Toaster />
       <body className={twMerge(inter.className)}>{children}</body>
     </html>
   );

@@ -12,6 +12,7 @@ import {
 import { Button } from './ui/button';
 import { initialNodes } from './Flow';
 import { Separator } from './ui/separator';
+import Spinner from './ui/spinner';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -292,16 +293,8 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
 
         {isLoading ? (
           //Replace w tailwind spinner
-          <div className='place-self-center spinner'></div>
+          <Spinner />
         ) : null}
-        {/* <textarea
-          rows={10}
-          style={{ borderRadius: 10, height: 'max-content' }}
-          id='text'
-          name='text'
-          onChange={onChange}
-          className='nodrag'
-        /> */}
       </div>
       <Handle
         type='target'
@@ -315,12 +308,12 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         id={id}
         isConnectable={false}
       />
-      <Handle
+      {/* <Handle
         type='source'
         position={Position.Right}
         id={id}
         isConnectable={false}
-      />
+      /> */}
     </div>
   );
 };

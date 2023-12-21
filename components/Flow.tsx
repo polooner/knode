@@ -73,12 +73,14 @@ export const initialNodes: Node[] = [
   // },
 ];
 
-const initialEdges: Edge[] = [
-  { id: 'edge-1', source: '1', target: '2' },
-  { id: 'edge-2', source: '1', target: '2' },
-  { id: 'edge-3', source: '2', target: '3' },
-  { id: 'edge-4', source: '1', target: '4' },
-];
+// const initialEdges: Edge[] = [
+//   { id: 'edge-1', source: '1', target: '2' },
+//   { id: 'edge-2', source: '1', target: '2' },
+//   { id: 'edge-3', source: '2', target: '3' },
+//   { id: 'edge-4', source: '1', target: '4' },
+// ];
+
+const initialEdges: Edge[] = [];
 
 const nodeTypes = {
   promptNode: PromptNode,

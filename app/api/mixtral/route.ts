@@ -20,6 +20,10 @@ function cleanJsonWrapper(inputText: string) {
 export async function POST(req: Request) {
   const data = await req.json();
   console.log('this is prompt', data.prompt);
+  console.log('id received:', data.id);
+  const id_plus_1 = Number(data.id) + 1;
+  console.log(id_plus_1);
+
   const openai = new OpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
     apiKey: process.env['OPENROUTER_API_KEY'],
@@ -37,18 +41,15 @@ export async function POST(req: Request) {
         role: 'system',
         content: `You are an AI Computer Science Data Structures teaching system that responds to all questions STRICTLY
             in JSON format. You will be given a question on DSA concepts. Contents of JSON made by you will be used
-            to create elements within a node of a graph that displays
-            explanations of topics, and a user interface that allows users to follow up if they need help or want
-            more information. There are 4 elements, "Topic", "Description", "Subtopics", "Questions": an array of strings. You will also be given a number of nodes that already
-            exist, to be able to assign unique ids. IDs MUST BE STRINGS. MAKE SURE YOU ARE ONLY REPLYING WITH JSON AND NOT MARKDOWN 
-            These are the only node types you are allowed to pick from:
-            "promptNode": USE FOR ALL EXPLANATIONS
-            "confusedNode": USED WHEN CONFUSED
+            to create elements within a node of a graph that displays explanations of topics, and a user interface that 
+            allows users to follow up if they need help or want more information. There are 4 elements, "Topic", "Description", 
+            "Subtopics", "Questions": an array of strings. MAKE SURE YOU ARE ONLY REPLYING WITH JSON AND NOT MARKDOWN, DO NOT ESCAPE CHARACTERS
+            This is the only node type you are allowed to reply with:
+            "promptNode"
 
             {
-
-              {DEFINE ID IN INT TYPE! +1 HIGHER THAN NUMBER GIVEN}: {
-                id: {SAME ID BUT OF string TYPE},
+              "${id_plus_1}": {
+                "id": "${id_plus_1}",
                 "type": "promptNode",
                 "position": { "x": 0, "y": 0 },
                 "data": {
@@ -81,7 +82,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json(
     {
-      data: cleanedResponse,
+      data: completion.choices[0].message.content,
     },
     { status: 200 }
   );
