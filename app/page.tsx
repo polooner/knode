@@ -5,8 +5,8 @@ import Flow from '@/components/Flow';
 
 export default function Page({ ...rest }) {
   return (
-    <div className='w-screen h-screen'>
+    <main className='w-screen h-screen'>
       <Flow />
-    </div>
+    </main>
   );
 }

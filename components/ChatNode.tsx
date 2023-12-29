@@ -68,7 +68,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               console.log(prompt);
               setLoading(true);
 
-              await fetch('/api/mixtral', {
+              await fetch('/api/ollama', {
                 body: JSON.stringify({
                   prompt: prompt,
                   temperature: 0.1,
@@ -153,7 +153,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         </div>
       </div>
 
-      <div className='flex justify-center'>
+      <div className='flex pt-2 justify-center'>
         {isLoading ? <Spinner /> : null}
       </div>
       {message ? <p className=' w-[200px]'>{message}</p> : null}
