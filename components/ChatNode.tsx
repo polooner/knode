@@ -17,6 +17,8 @@ import Spinner from './ui/spinner';
 import { Separator } from './ui/separator';
 import toast from 'react-hot-toast';
 
+const AI_MODEL = process.env['NEXT_PUBLIC_AI_MODEL'];
+
 type TextNodeProps = NodeProps & {
   title: string;
   answer: string;
@@ -50,6 +52,10 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         </label>
         <Separator />
 
+        {/* 
+          Keeping this without being a form might decrease unnecessary calls caused by pressing the "Enter" button.
+          If user calls enter to insert a new line, they would call the AI unnecessary.
+        */}
         <Textarea
           value={prompt as any}
           onChangeCapture={(e) => {
@@ -68,11 +74,11 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               console.log(prompt);
               setLoading(true);
 
-              await fetch('/api/ollama', {
+              await fetch(`/api/${AI_MODEL}`, {
                 body: JSON.stringify({
-                  prompt: prompt,
+                  prompt,
                   temperature: 0.1,
-                  id,
+                  id: Number(id) + 1,
                 }),
                 method: 'POST',
               }).then((res) =>
@@ -82,10 +88,8 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                     const node = JSON.parse(json.data);
 
                     console.log('THIS IS CLIENT JSON', json.data);
-
                     const lastKey = Object.keys(node).pop() as string;
                     node[lastKey].position['x'] = xPos + 400;
-
                     console.log('XPOS OF NODE: ', node[lastKey].position['x']);
 
                     setNodes((nds) => nds.concat(node[lastKey]));
@@ -149,13 +153,11 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             }}
           >
             Ask
+            {isLoading ? <Spinner /> : null}
           </Button>
         </div>
       </div>
 
-      <div className='flex pt-2 justify-center'>
-        {isLoading ? <Spinner /> : null}
-      </div>
       {message ? <p className=' w-[200px]'>{message}</p> : null}
 
       <Handle

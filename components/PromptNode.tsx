@@ -14,6 +14,8 @@ import { initialNodes } from './Flow';
 import { Separator } from './ui/separator';
 import Spinner from './ui/spinner';
 
+const AI_MODEL = process.env['NEXT_PUBLIC_AI_MODEL'];
+
 type TextNodeProps = NodeProps & {
   title: string;
   description: string;
@@ -61,44 +63,30 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                     onClick={async () => {
                       console.log(prompt);
                       setLoading(true);
-                      await fetch('/api/gpt', {
+                      await fetch(`api/${AI_MODEL}`, {
                         body: JSON.stringify({
-                          prompt: `Explain ${topic}. # of nodes alive: ${initialNodes.length}`,
+                          prompt: `Explain ${topic}.`,
+                          id: Number(initialNodes.length),
                         }),
                         method: 'POST',
                       }).then((res) =>
                         res.json().then((json) => {
+                          //TODO: abstract this into a single function across all nodes
+
                           // EDGE ASSIGNING WORKS
                           const node = JSON.parse(json.data);
                           console.log(json.data);
 
-                          console.log(
-                            'length of object',
-                            Object.keys(node).length
-                          );
+                          const lastKey = Object.keys(node).pop() as string;
+
                           // ASIGNING LOCATION
-                          node[
-                            Object.keys(node)[Object.keys(node).length - 1]
-                          ].position.x = xPos + 400;
-                          node[
-                            Object.keys(node)[Object.keys(node).length - 1]
-                          ].position.y = yPos - 600;
-                          console.log(
-                            'XPOS OF NODE: ',
-                            node[
-                              Object.keys(node)[Object.keys(node).length - 1]
-                            ].position.x
-                          );
+                          node[lastKey].position['x'] = xPos + 400;
+                          node[lastKey].position['x'] = xPos - 600;
+                          console.log(node[lastKey].position['x']);
 
                           Object.assign(initialNodes, node);
                           setNodes(initialNodes);
-                          console.log('this is initial nodes', initialNodes);
-                          console.log(
-                            'THE DESTRUCTURED NODE:',
-                            node[
-                              Object.keys(node)[Object.keys(node).length - 1]
-                            ]
-                          );
+                          console.log('THE DESTRUCTURED NODE:', node[lastKey]);
                           const keyOfNewEdge = Object.keys(edges).length;
                           const obj = {};
                           const newEdge = {
@@ -127,6 +115,8 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                           };
                           //@ts-expect-error
                           obj[keyOfNewEdge] = newEdge;
+
+                          //TODO: fix hacky edge assigning
 
                           Object.assign(edges, obj);
                           setLoading(false);

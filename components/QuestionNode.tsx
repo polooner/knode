@@ -16,6 +16,8 @@ import { Textarea } from './ui/textarea';
 import Spinner from './ui/spinner';
 import { Separator } from './ui/separator';
 
+const AI_MODEL = process.env['NEXT_PUBLIC_AI_MODEL'];
+
 type TextNodeProps = NodeProps & {
   title: string;
   questions: string[];

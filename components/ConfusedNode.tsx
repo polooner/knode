@@ -15,6 +15,7 @@ import { initialNodes } from './Flow';
 import { Separator } from './ui/separator';
 
 // Clean up bad state controls
+const AI_MODEL = process.env['NEXT_PUBLIC_AI_MODEL'];
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -54,7 +55,7 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             onClick={async () => {
               console.log(prompt);
               setLoading(true);
-              await fetch('/api/confused', {
+              await fetch(`/api/${AI_MODEL}`, {
                 body: JSON.stringify({
                   prompt: `I am still confused about this description: ${data.description}. in the context of ${data.topic}.  # of nodes alive: ${initialNodes.length}`,
                   temperature: 0.1,
@@ -65,38 +66,24 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                   // EDGE ASSIGNING WORKS
                   const node = JSON.parse(json.data);
                   console.log(json.data);
-
+                  const lastKey = Object.keys(node).pop() as string;
                   console.log('length of object', Object.keys(node).length);
                   // ASIGNING LOCATION
-                  node[
-                    Object.keys(node)[Object.keys(node).length - 1]
-                  ].position.x = xPos + 400;
-                  node[
-                    Object.keys(node)[Object.keys(node).length - 1]
-                  ].position.y = yPos + 150;
-                  console.log(
-                    'XPOS OF NODE: ',
-                    node[Object.keys(node)[Object.keys(node).length - 1]]
-                      .position.x
-                  );
+                  node[lastKey].position['x'] = xPos + 400;
+                  node[lastKey].position['y'] = yPos + 150;
+                  console.log(node[lastKey].position['x']);
 
                   Object.assign(initialNodes, node);
                   setNodes(initialNodes);
-                  console.log('this is initial nodes', initialNodes);
-                  console.log(
-                    'THE DESTRUCTURED NODE:',
-                    node[Object.keys(node)[Object.keys(node).length - 1]]
-                  );
+
+                  console.log('THE DESTRUCTURED NODE:', node[lastKey]);
                   const keyOfNewEdge = Object.keys(edges).length;
                   const obj = {};
                   const newEdge = {
-                    id: `edge-${id}-${
-                      node[Object.keys(node)[Object.keys(node).length - 1]].id
-                    }`,
+                    id: `edge-${id}-${node[lastKey].position['id']}`,
                     source: id,
                     //there's 2 empty objects?
-                    target:
-                      node[Object.keys(node)[Object.keys(node).length - 1]].id,
+                    target: node[lastKey].position['id'],
                     markerEnd: {
                       type: MarkerType.ArrowClosed,
                       width: 20,

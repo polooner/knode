@@ -45,8 +45,8 @@ export async function POST(req: Request) {
   const chain = prompt.pipe(model);
 
   const result = await chain.invoke({
-    input: 'trees',
-    id: 2,
+    input: data.prompt,
+    id: data.id.toString() as Number,
   });
 
   console.log(JSON.parse(result.content as string));
