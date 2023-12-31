@@ -47,7 +47,6 @@ export async function POST(req: Request) {
   //@ts-expect-error
   const resultJson = JSON.parse(result.content);
 
-  console.log(resultJson.type);
   resultJson.id = String(data.id);
   console.log(resultJson);
 

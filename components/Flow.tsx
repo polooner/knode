@@ -8,12 +8,15 @@ import ReactFlow, {
   MiniMap,
   Controls,
   Background,
+  Panel,
 } from 'reactflow';
 import PromptNode from './PromptNode';
 import ChatNode from './ChatNode';
 import ConfusedNode from './ConfusedNode';
 import QuestionNode from './QuestionNode';
 import { useCallback, useMemo } from 'react';
+import { Button } from './ui/button';
+import Link from 'next/link';
 
 export const initialNodes: Node[] = [
   {
@@ -120,6 +123,14 @@ export default function Flow({ ...rest }) {
       fitView
       {...rest}
     >
+      <Panel position='top-right'>
+        <Button>Save session</Button>
+      </Panel>
+      <Panel position='top-left'>
+        <Link className='hover:underline' href={'/'}>
+          😇 Enjoying knode? Help us with this short Google Form &rarr;
+        </Link>
+      </Panel>
       <Controls />
       <Background color='#aaa' />
       <MiniMap />
