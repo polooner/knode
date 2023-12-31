@@ -66,8 +66,8 @@ const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
 
         <div className='flex flex-col w-[350px] gap-2.5 max-w-[350px] self-center place-items-center'>
           <Button
-            style={{ gap: 10 }}
-            key={id}
+            className='gap-10'
+            key={'questionbtn1'}
             onClick={async () => {
               console.log(prompt);
               setLoading(true);
@@ -88,7 +88,7 @@ const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             Check my answer!
           </Button>
           <Button
-            key={id}
+            key={'questionbtn2'}
             onClick={() => {
               setShowAnswer(!isAnswer);
             }}

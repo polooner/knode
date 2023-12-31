@@ -13,6 +13,7 @@ import PromptNode from './PromptNode';
 import ChatNode from './ChatNode';
 import ConfusedNode from './ConfusedNode';
 import QuestionNode from './QuestionNode';
+import { useCallback, useMemo } from 'react';
 
 export const initialNodes: Node[] = [
   {
@@ -72,34 +73,38 @@ const initialEdges: Edge[] = [
 
 // const initialEdges: Edge[] = [];
 
-const nodeTypes = {
-  promptNode: PromptNode,
-  quizNode: ChatNode,
-  confusedNode: ConfusedNode,
-  questionNode: QuestionNode,
-};
-
-const defaultEdgeOptions = {
-  markerEnd: {
-    type: MarkerType.ArrowClosed,
-    width: 20,
-    height: 20,
-    color: '#000000',
-  },
-  // label: 'marker size and color',
-  style: {
-    strokeWidth: 2,
-    stroke: '#000000',
-  },
-};
-
-function Flow({ ...rest }) {
+export default function Flow({ ...rest }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   // const onConnect = useCallback(
   //   (params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)),
   //   [setEdges]
   // );
+  const nodeTypes = useMemo(
+    () => ({
+      promptNode: PromptNode,
+      quizNode: ChatNode,
+      confusedNode: ConfusedNode,
+      questionNode: QuestionNode,
+    }),
+    []
+  );
+  const defaultEdgeOptions = useMemo(
+    () => ({
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        width: 20,
+        height: 20,
+        color: '#000000',
+      },
+      // label: 'label an edge',
+      style: {
+        strokeWidth: 2,
+        stroke: '#000000',
+      },
+    }),
+    []
+  );
 
   return (
     <ReactFlow
@@ -121,5 +126,3 @@ function Flow({ ...rest }) {
     </ReactFlow>
   );
 }
-
-export default Flow;
