@@ -43,8 +43,22 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const [isLoading, setLoading] = useState<boolean>(false);
   const { setNodes, setEdges } = useReactFlow();
   const edges = useEdges();
-  const nodes = useNodes();
-  console.log(edges);
+
+  const addEdgeWrapped = useCallback(
+    (node: any) =>
+      setEdges((eds) =>
+        addEdge(
+          {
+            id: `edge1-${node['id']}`,
+            source: String(id),
+            //there's 2 empty objects?
+            target: String(node['id']),
+          },
+          eds
+        )
+      ),
+    [setEdges]
+  );
 
   return (
     <div className='h-max border rounded-md border-black gap-2.5 block justify-center items-center text-left w-[350px] max-w-[350px] p-5 bg-white'>
@@ -88,60 +102,9 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                   .json()
                   .then((json) => {
                     const node = JSON.parse(json.data);
-                    console.log('node', node);
                     node['position']['x'] = xPos + 400;
-                    console.log('XPOS OF NODE: ', node['position']['x']);
-
                     setNodes((nds) => nds.concat(node));
-
-                    // setEdges((eds) =>
-                    //   addEdge(
-                    //     {
-                    //       id: `edge1-${node['id']}`,
-                    //       source: String(id),
-                    //       //there's 2 empty objects?
-                    //       target: String(node['id']),
-                    //       markerEnd: {
-                    //         type: MarkerType.ArrowClosed,
-                    //         width: 20,
-                    //         height: 20,
-                    //         color: '#000000',
-                    //       },
-                    //       // label: 'marker size and color',
-                    //       style: {
-                    //         strokeWidth: 2,
-                    //         stroke: '#000000',
-                    //       },
-                    //     },
-                    //     eds
-                    //   )
-                    // );
-                    // const keyOfNewEdge = Object.keys(edges).length;
-                    // const obj = {};
-                    // const newEdge = {
-                    //   id: `edge1-${node.id}`,
-                    //   source: id,
-                    //   //there's 2 empty objects?
-                    //   target: node.id,
-                    //   markerEnd: {
-                    //     type: MarkerType.ArrowClosed,
-                    //     width: 20,
-                    //     height: 20,
-                    //     color: '#000000',
-                    //   },
-                    //   // label: 'marker size and color',
-                    //   style: {
-                    //     strokeWidth: 2,
-                    //     stroke: '#000000',
-                    //   },
-                    // };
-                    // //@ts-expect-error
-                    // obj[keyOfNewEdge] = newEdge;
-
-                    // Object.assign(edges, obj);
-                    // setEdges(edges);
-                    console.log('edges after setEdges', edges);
-                    console.log('edges after setEdges', nodes);
+                    addEdgeWrapped(node);
                   })
                   .catch((e) => {
                     toast(e as string);
