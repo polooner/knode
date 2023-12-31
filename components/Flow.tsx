@@ -17,6 +17,7 @@ import QuestionNode from './QuestionNode';
 import { useCallback, useMemo } from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import ApiKeyDialog from './ApiKeyDialog';
 
 export const initialNodes: Node[] = [
   {
@@ -127,9 +128,12 @@ export default function Flow({ ...rest }) {
         <Button>Save session</Button>
       </Panel>
       <Panel position='top-left'>
-        <Link className='hover:underline' href={'/'}>
+        <Link target='_blank' className='hover:underline' href={'/'}>
           😇 Enjoying knode? Help us with this short Google Form &rarr;
         </Link>
+      </Panel>
+      <Panel position='top-center'>
+        <ApiKeyDialog />
       </Panel>
       <Controls />
       <Background color='#aaa' />
