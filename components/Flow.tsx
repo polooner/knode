@@ -9,15 +9,19 @@ import ReactFlow, {
   Controls,
   Background,
   Panel,
+  useReactFlow,
 } from 'reactflow';
 import PromptNode from './PromptNode';
 import ChatNode from './ChatNode';
 import ConfusedNode from './ConfusedNode';
 import QuestionNode from './QuestionNode';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import ApiKeyDialog from './ApiKeyDialog';
+import SaveSessionButton from './SaveSessionButton';
+
+const flowKey = 'example-flow';
 
 export const initialNodes: Node[] = [
   {
@@ -80,10 +84,9 @@ const initialEdges: Edge[] = [
 export default function Flow({ ...rest }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  // const onConnect = useCallback(
-  //   (params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)),
-  //   [setEdges]
-  // );
+  //TODO: make a PR for better example
+  const [rfInstance, setRfInstance] = useState(useReactFlow());
+  const { setViewport } = useReactFlow();
   const nodeTypes = useMemo(
     () => ({
       promptNode: PromptNode,
@@ -109,9 +112,43 @@ export default function Flow({ ...rest }) {
     }),
     []
   );
+  const onSave = useCallback(() => {
+    if (rfInstance) {
+      const flow = rfInstance.toObject();
+      const sessionJson = JSON.stringify(flow);
+
+      const blob = new Blob([sessionJson], { type: 'application/json' });
+
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'knode-session.json';
+
+      link.click();
+      localStorage.setItem(flowKey, flow as any);
+    }
+  }, [rfInstance]);
+
+  const onRestore = useCallback(() => {
+    const restoreFlow = async () => {
+      //@ts-expect-error
+      const flow = JSON.parse(localStorage.getItem(flowKey));
+
+      if (flow) {
+        const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+        setNodes(flow.nodes || []);
+        setEdges(flow.edges || []);
+        setViewport({ x, y, zoom });
+      }
+    };
+
+    restoreFlow();
+  }, [setNodes, setViewport]);
 
   return (
     <ReactFlow
+      onInit={setRfInstance}
       className='w-full h-full'
       nodes={nodes}
       onNodesChange={onNodesChange}
@@ -125,15 +162,17 @@ export default function Flow({ ...rest }) {
       {...rest}
     >
       <Panel position='top-right'>
-        <Button>Save session</Button>
+        <div className='flex space-x-2 flex-row'>
+          {/* <ApiKeyDialog />
+          <SaveSessionButton /> */}
+          <button onClick={onSave}>save</button>
+          <button onClick={onRestore}>restore</button>
+        </div>
       </Panel>
       <Panel position='top-left'>
         <Link target='_blank' className='hover:underline' href={'/'}>
           😇 Enjoying knode? Help us with this short Google Form &rarr;
         </Link>
-      </Panel>
-      <Panel position='top-center'>
-        <ApiKeyDialog />
       </Panel>
       <Controls />
       <Background color='#aaa' />
