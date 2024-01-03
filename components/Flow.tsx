@@ -19,7 +19,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import ApiKeyDialog from './ApiKeyDialog';
-import SaveSessionButton from './SaveSessionButton';
 
 const flowKey = 'example-flow';
 
@@ -112,7 +111,7 @@ export default function Flow({ ...rest }) {
     }),
     []
   );
-  const onSave = useCallback(() => {
+  const onSave = useCallback(async () => {
     if (rfInstance) {
       const flow = rfInstance.toObject();
       const sessionJson = JSON.stringify(flow);
@@ -126,7 +125,12 @@ export default function Flow({ ...rest }) {
       link.download = 'knode-session.json';
 
       link.click();
-      localStorage.setItem(flowKey, flow as any);
+      localStorage.setItem(flowKey, sessionJson);
+
+      await fetch('api/save-session', {
+        method: 'POST',
+        body: sessionJson,
+      }).then((res) => console.log(res));
     }
   }, [rfInstance]);
 
@@ -134,6 +138,7 @@ export default function Flow({ ...rest }) {
     const restoreFlow = async () => {
       //@ts-expect-error
       const flow = JSON.parse(localStorage.getItem(flowKey));
+      console.log(flow);
 
       if (flow) {
         const { x = 0, y = 0, zoom = 1 } = flow.viewport;
@@ -163,10 +168,12 @@ export default function Flow({ ...rest }) {
     >
       <Panel position='top-right'>
         <div className='flex space-x-2 flex-row'>
-          {/* <ApiKeyDialog />
-          <SaveSessionButton /> */}
-          <button onClick={onSave}>save</button>
-          <button onClick={onRestore}>restore</button>
+          <ApiKeyDialog />
+
+          <Button onClick={onSave}>Save Session</Button>
+          {/* TODO: Open a modal to let user upload a file 
+            <Button onClick={onRestore}>Load a Session</Button>
+          */}
         </div>
       </Panel>
       <Panel position='top-left'>
