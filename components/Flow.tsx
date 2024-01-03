@@ -84,6 +84,7 @@ export default function Flow({ ...rest }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   //TODO: make a PR for better example
+  //TODO: save user inputs to the flow session object on interaction
   const [rfInstance, setRfInstance] = useState(useReactFlow());
   const { setViewport } = useReactFlow();
   const nodeTypes = useMemo(
