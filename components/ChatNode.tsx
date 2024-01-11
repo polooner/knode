@@ -87,7 +87,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               console.log(prompt);
               setLoading(true);
 
-              await fetch(`/api/ollama`, {
+              await fetch(`/api/gpt`, {
                 body: JSON.stringify({
                   prompt,
                   temperature: 0.1,

@@ -20,8 +20,6 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import ApiKeyDialog from './ApiKeyDialog';
 
-const flowKey = 'example-flow';
-
 export const initialNodes: Node[] = [
   {
     id: '1',
@@ -31,7 +29,7 @@ export const initialNodes: Node[] = [
     },
     position: { x: 0, y: 0 },
   },
-
+  // data for local testing
   // {
   //   id: '2',
   //   type: 'promptNode',
@@ -72,18 +70,18 @@ export const initialNodes: Node[] = [
   // },
 ];
 
-const initialEdges: Edge[] = [
-  { id: 'edge-1', source: '1', target: '2' },
-  { id: 'edge-2', source: '1', target: '2' },
-  { id: 'edge-3', source: '2', target: '3' },
-];
+// const initialEdges: Edge[] = [
+//   { id: 'edge-1', source: '1', target: '2' },
+//   { id: 'edge-2', source: '1', target: '2' },
+//   { id: 'edge-3', source: '2', target: '3' },
+// ];
 
-// const initialEdges: Edge[] = [];
+const initialEdges: Edge[] = [];
 
 export default function Flow({ ...rest }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  //TODO: make a PR for better example
+  //TODO: make a PR to reactflow for better example
   //TODO: save user inputs to the flow session object on interaction
   const [rfInstance, setRfInstance] = useState(useReactFlow());
   const { setViewport } = useReactFlow();
@@ -104,7 +102,6 @@ export default function Flow({ ...rest }) {
         height: 20,
         color: '#000000',
       },
-      // label: 'label an edge',
       style: {
         strokeWidth: 2,
         stroke: '#000000',
@@ -126,7 +123,7 @@ export default function Flow({ ...rest }) {
       link.download = 'knode-session.json';
 
       link.click();
-      localStorage.setItem(flowKey, sessionJson);
+      localStorage.setItem('knodegraph', sessionJson);
 
       await fetch('api/save-session', {
         method: 'POST',
@@ -169,12 +166,11 @@ export default function Flow({ ...rest }) {
     >
       <Panel position='top-right'>
         <div className='flex space-x-2 flex-row'>
-          <ApiKeyDialog />
-
           <Button onClick={onSave}>Save Session</Button>
           {/* TODO: Open a modal to let user upload a file 
             <Button onClick={onRestore}>Load a Session</Button>
           */}
+          <ApiKeyDialog />
         </div>
       </Panel>
       <Panel position='top-left'>

@@ -14,9 +14,6 @@ import { Button } from './ui/button';
 import { initialNodes } from './Flow';
 import { Separator } from './ui/separator';
 
-// Clean up bad state controls
-const AI_MODEL = process.env['NEXT_PUBLIC_AI_MODEL'];
-
 type TextNodeProps = NodeProps & {
   title: string;
   description: string;
@@ -55,9 +52,9 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             onClick={async () => {
               console.log(prompt);
               setLoading(true);
-              await fetch(`/api/${AI_MODEL}`, {
+              await fetch(`/api/gpt`, {
                 body: JSON.stringify({
-                  prompt: `I am still confused about this description: ${data.description}. in the context of ${data.topic}.  # of nodes alive: ${initialNodes.length}`,
+                  prompt: `I am still confused about this description: ${data.description}. in the context of ${data.topic}.`,
                   temperature: 0.1,
                 }),
                 method: 'POST',

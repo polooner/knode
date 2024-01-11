@@ -10,37 +10,33 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 import Spinner from './ui/spinner';
+import { useKeyContext } from '@/app-context/key-context-provider';
 
 export default function ApiKeyDialog() {
-  const [apiKey, setApiKey] = useState('');
   const [open, setOpen] = useState<boolean>(false);
+  //TODO: dialog not open when no key
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState('');
 
-  const closeDialog = useCallback(() => {
-    setOpen(false);
-  }, [setOpen]);
+  const [apiKey, setApiKey] = useKeyContext();
+  console.log('key in dialog is', apiKey);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setApiKey(
-        localStorage.getItem('openai_api_key') == null ||
-          localStorage.getItem('openai_api_key') == ''
-          ? ''
-          : (localStorage.getItem('openai_api_key') as string)
-      );
-      setOpen(apiKey == '' ? true : false);
+    if (apiKey == '' || apiKey == undefined || apiKey == null) {
+      setOpen(true);
     }
+    console.log('key in effect', apiKey);
   }, [apiKey]);
 
-  //TODO: add trycatch blocks
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     localStorage.setItem('openai_api_key', input);
-    closeDialog();
+
+    setApiKey(input);
+    console.log(localStorage.getItem('openai_api_key'));
+    setOpen(false);
   }
 
   return (
