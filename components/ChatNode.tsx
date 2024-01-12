@@ -76,7 +76,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             onClick={async () => {
               console.log(prompt);
               setLoading(true);
-              await fetch(`/api/test`, {
+              await fetch(`/api/gpt`, {
                 body: JSON.stringify({
                   prompt,
                   temperature: 0.1,

@@ -78,7 +78,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                     onClick={async () => {
                       console.log(prompt);
                       setLoading(true);
-                      await fetch(`api/test`, {
+                      await fetch(`api/gpt`, {
                         body: JSON.stringify({
                           prompt: `Explain ${topic}.`,
                           id: Number(nodes.length),
@@ -151,7 +151,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                     onClick={async () => {
                       console.log(prompt);
                       setLoading(true);
-                      await fetch('/api/test', {
+                      await fetch('/api/gpt', {
                         body: JSON.stringify({
                           prompt: `I am confused about ${item}. in terms of ${data.topic}.`,
                           type: 'confused',
