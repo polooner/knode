@@ -116,11 +116,12 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               data.questions.map((question) => {
                 return (
                   <Button
+                    disabled={isLoading}
                     onClick={() => {
                       const questionNode = {
                         id: String(nodes.length + 1),
                         type: 'questionNode',
-                        position: { x: xPos + 400, y: 200 },
+                        position: { x: xPos + 400, y: yPos + 200 },
                         data: {
                           q: question.q,
                           a: question.a,
@@ -145,6 +146,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               data.im_confused.map((item) => {
                 return (
                   <Button
+                    disabled={isLoading}
                     key={item}
                     onClick={async () => {
                       console.log(prompt);
@@ -157,10 +159,18 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                         method: 'POST',
                       }).then((res) =>
                         res.json().then((json) => {
-                          const node = JSON.parse(json.data);
-                          node['id'] = String(nodes.length + 1);
-                          setNodes((nds) => nds.concat(node));
-                          addEdgeWrapped(node);
+                          const rephrasedExplanation = json.data;
+                          const confusedNode = {
+                            id: String(nodes.length + 1),
+                            type: 'confusedNode',
+                            data: {
+                              description: rephrasedExplanation,
+                            },
+                            position: { x: xPos + 400, y: yPos + 800 },
+                          };
+
+                          setNodes((nds) => nds.concat(confusedNode));
+                          addEdgeWrapped(confusedNode);
                           setLoading(false);
                         })
                       );
