@@ -3,9 +3,9 @@ import OpenAI from 'openai';
 
 export async function POST(req: Request) {
   const data = await req.json();
-  const { apiKey } = data;
+  const { apiKey, mode } = data;
 
-  if (apiKey) {
+  if (apiKey && data.prompt != null && data.prompt != undefined) {
     console.log('this is prompt', data.prompt);
     const openai = new OpenAI({
       apiKey: apiKey,
@@ -18,7 +18,8 @@ export async function POST(req: Request) {
           role: 'system',
           content: `Respond to only Computer Science DSA questions in JSON format. Your JSON response should include four elements: 
       "Topic", "Description", "Subtopics" (try to make 3), and "Questions" (an array of 3 objects), suitable for graph node creation in a 
-      UI. Use only "promptNode" type for explanations. 
+      UI. Use only "promptNode" type for explanations. If a user asks for clarification, reply only with a rephrased, better explanation of the given
+      description they provide.
       {
       "type": "promptNode",
       "position": { "x": 0, "y": 0 },

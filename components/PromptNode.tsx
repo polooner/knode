@@ -3,9 +3,9 @@
 import { useCallback, useState } from 'react';
 import {
   Handle,
-  MarkerType,
   NodeProps,
   Position,
+  addEdge,
   useEdges,
   useReactFlow,
 } from 'reactflow';
@@ -13,8 +13,7 @@ import { Button } from './ui/button';
 import { initialNodes } from './Flow';
 import { Separator } from './ui/separator';
 import Spinner from './ui/spinner';
-
-const AI_MODEL = process.env['NEXT_PUBLIC_AI_MODEL'];
+import { useKeyContext } from '@/app-context/key-context-provider';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -27,16 +26,30 @@ type TextNodeProps = NodeProps & {
 };
 //@ts-expect-error
 const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
-  console.log('xpos of promptnode is:', xPos);
-  console.log('ypos of promptnode is:', yPos);
-  console.log('ID OF PROMPT NODE IS: ', id);
   const [prompt, setPrompt] = useState<string | null>();
   const [isLoading, setLoading] = useState<boolean>(false);
-  const { setEdges, addEdges, addNodes } = useReactFlow();
+  const { setEdges, setNodes } = useReactFlow();
+  const [apiKey] = useKeyContext();
   const edges = useEdges();
 
+  const addEdgeWrapped = useCallback(
+    (node: any) =>
+      setEdges((eds) =>
+        addEdge(
+          {
+            id: `edge${id}-${node['id']}`,
+            source: String(id),
+            //there's 2 empty objects?
+            target: String(node['id']),
+          },
+          eds
+        )
+      ),
+    [id, setEdges]
+  );
+
   console.log(edges);
-  const { setNodes } = useReactFlow();
+
   const onChange = useCallback(
     (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
       const { target } = evt;
@@ -63,65 +76,23 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                     onClick={async () => {
                       console.log(prompt);
                       setLoading(true);
-                      await fetch(`api/${AI_MODEL}`, {
+                      await fetch(`api/test`, {
                         body: JSON.stringify({
                           prompt: `Explain ${topic}.`,
                           id: Number(initialNodes.length),
+                          apiKey,
+                          type: 'subtopic',
                         }),
                         method: 'POST',
                       }).then((res) =>
                         res.json().then((json) => {
                           //TODO: abstract this into a single function across all nodes
-
-                          // EDGE ASSIGNING WORKS
                           const node = JSON.parse(json.data);
-                          console.log(json.data);
-
-                          const lastKey = Object.keys(node).pop() as string;
-
-                          // ASIGNING LOCATION
-                          node[lastKey].position['x'] = xPos + 400;
-                          node[lastKey].position['x'] = xPos - 600;
-                          console.log(node[lastKey].position['x']);
-
-                          Object.assign(initialNodes, node);
-                          setNodes(initialNodes);
-                          console.log('THE DESTRUCTURED NODE:', node[lastKey]);
-                          const keyOfNewEdge = Object.keys(edges).length;
-                          const obj = {};
-                          const newEdge = {
-                            id: `edge1-${
-                              node[
-                                Object.keys(node)[Object.keys(node).length - 1]
-                              ].id
-                            }`,
-                            source: id,
-                            //there's 2 empty objects?
-                            target:
-                              node[
-                                Object.keys(node)[Object.keys(node).length - 1]
-                              ].id,
-                            markerEnd: {
-                              type: MarkerType.ArrowClosed,
-                              width: 20,
-                              height: 20,
-                              color: '#000000',
-                            },
-                            // label: 'marker size and color',
-                            style: {
-                              strokeWidth: 2,
-                              stroke: '#000000',
-                            },
-                          };
-                          //@ts-expect-error
-                          obj[keyOfNewEdge] = newEdge;
-
-                          //TODO: fix hacky edge assigning
-
-                          Object.assign(edges, obj);
+                          node['position']['y'] = yPos - 600;
+                          node['position']['x'] = xPos + 400;
+                          setNodes((nds) => nds.concat(node));
+                          addEdgeWrapped(node);
                           setLoading(false);
-                          setEdges(edges);
-                          console.log('EDGES POST FETCH', edges);
                         })
                       );
                     }}
@@ -151,47 +122,8 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                           a: question.a,
                         },
                       };
-                      console.log('ID OF PROMPTNODE PARENT: ', id);
-                      const keyOfNewNode = Object.keys(initialNodes).length;
-                      const obj = {};
-                      //@ts-expect-error
-                      obj[keyOfNewNode] = questionNode;
-
-                      Object.assign(initialNodes, obj);
-                      setNodes(initialNodes);
-                      console.log('this is initial nodes', initialNodes);
-                      console.log(
-                        'MAKING NEW EDGE WITH DATA:',
-                        questionNode.id,
-                        edges[edges.length - 1].target
-                      );
-                      const keyOfNewEdge = Object.keys(edges).length;
-
-                      const newEdge = {
-                        id: `edge1-${questionNode.id}`,
-                        source: id,
-                        //there's 2 empty objects?
-                        target: questionNode.id,
-                        markerEnd: {
-                          type: MarkerType.ArrowClosed,
-                          width: 20,
-                          height: 20,
-                          color: '#000000',
-                        },
-                        // label: 'marker size and color',
-                        style: {
-                          strokeWidth: 2,
-                          stroke: '#000000',
-                        },
-                      };
-                      //@ts-expect-error
-                      obj[keyOfNewEdge] = newEdge;
-
-                      Object.assign(edges, obj);
-                      setEdges(edges);
-
-                      console.log('REASSIGNED EDGES:', edges);
-                      console.log('EDGES POST FETCH', edges);
+                      setNodes((nds) => nds.concat(questionNode));
+                      addEdgeWrapped(questionNode);
                     }}
                     key={question.q}
                   >
@@ -213,63 +145,19 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                     onClick={async () => {
                       console.log(prompt);
                       setLoading(true);
-                      await fetch('/api/confused', {
+                      await fetch('/api/test', {
                         body: JSON.stringify({
-                          prompt: `I am confused about ${item}. in terms of ${
-                            data.topic
-                          }. # of nodes alive: ${initialNodes.length + 1}`,
+                          prompt: `I am confused about ${item}. in terms of ${data.topic}.`,
+                          type: 'confused',
                         }),
                         method: 'POST',
                       }).then((res) =>
                         res.json().then((json) => {
                           const node = JSON.parse(json.data);
-                          console.log('ID OF PROMPTNODE PARENT: ', id);
-                          node[
-                            Object.keys(node)[Object.keys(node).length - 1]
-                          ].position.x = xPos + 400;
-                          node[
-                            Object.keys(node)[Object.keys(node).length - 1]
-                          ].position.y = yPos + 800;
-                          Object.assign(initialNodes, node);
-                          setNodes(initialNodes);
-                          console.log('this is initial nodes', initialNodes);
+                          setNodes((nds) => nds.concat(node));
+                          addEdgeWrapped(node);
 
-                          const keyOfNewEdge = Object.keys(edges).length;
-                          const obj = {};
-                          const newEdge = {
-                            id: `edge1-${
-                              node[
-                                Object.keys(node)[Object.keys(node).length - 1]
-                              ].id
-                            }`,
-                            source: id,
-                            //there's 2 empty objects?
-                            target:
-                              node[
-                                Object.keys(node)[Object.keys(node).length - 1]
-                              ].id,
-                            markerEnd: {
-                              type: MarkerType.ArrowClosed,
-                              width: 20,
-                              height: 20,
-                              color: '#000000',
-                            },
-                            // label: 'marker size and color',
-                            style: {
-                              strokeWidth: 2,
-                              stroke: '#000000',
-                            },
-                          };
-                          //@ts-expect-error
-                          obj[keyOfNewEdge] = newEdge;
-
-                          Object.assign(edges, obj);
-                          setEdges(edges);
                           setLoading(false);
-                          console.log('EDGES POST FETCH', edges);
-
-                          console.log('REASSIGNED EDGES:', edges);
-                          console.log('EDGES POST FETCH', edges);
                         })
                       );
                     }}
@@ -281,10 +169,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             : null}
         </div>
 
-        {isLoading ? (
-          //Replace w tailwind spinner
-          <Spinner />
-        ) : null}
+        {isLoading ? <Spinner /> : null}
       </div>
       <Handle
         type='target'
@@ -298,6 +183,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         id={id}
         isConnectable={false}
       />
+      {/* TODO: add top and bottom handles */}
       {/* <Handle
         type='source'
         position={Position.Right}

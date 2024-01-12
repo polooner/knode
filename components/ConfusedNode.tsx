@@ -60,20 +60,16 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                 method: 'POST',
               }).then((res) =>
                 res.json().then((json) => {
-                  // EDGE ASSIGNING WORKS
                   const node = JSON.parse(json.data);
-                  console.log(json.data);
+
                   const lastKey = Object.keys(node).pop() as string;
-                  console.log('length of object', Object.keys(node).length);
                   // ASIGNING LOCATION
                   node[lastKey].position['x'] = xPos + 400;
                   node[lastKey].position['y'] = yPos + 150;
-                  console.log(node[lastKey].position['x']);
 
                   Object.assign(initialNodes, node);
                   setNodes(initialNodes);
 
-                  console.log('THE DESTRUCTURED NODE:', node[lastKey]);
                   const keyOfNewEdge = Object.keys(edges).length;
                   const obj = {};
                   const newEdge = {

@@ -76,7 +76,7 @@ export const initialNodes: Node[] = [
 //   { id: 'edge-3', source: '2', target: '3' },
 // ];
 
-const initialEdges: Edge[] = [];
+const initialEdges: Edge[] = [{ id: 'edge-1', source: '1', target: '2' }];
 
 export default function Flow({ ...rest }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);

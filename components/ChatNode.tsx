@@ -14,8 +14,7 @@ import { Textarea } from './ui/textarea';
 import Spinner from './ui/spinner';
 import { Separator } from './ui/separator';
 import toast from 'react-hot-toast';
-
-const AI_MODEL = process.env['NEXT_PUBLIC_AI_MODEL'];
+import { useKeyContext } from '@/app-context/key-context-provider';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -35,6 +34,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
     []
   );
 
+  const [apiKey] = useKeyContext();
   const [message, setMessage] = useState<string | null>();
   const [prompt, setPrompt] = useState<string | null>();
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -46,7 +46,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
       setEdges((eds) =>
         addEdge(
           {
-            id: `edge1-${node['id']}`,
+            id: `edge${id}-${node['id']}`,
             source: String(id),
             //there's 2 empty objects?
             target: String(node['id']),
@@ -54,7 +54,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           eds
         )
       ),
-    [setEdges]
+    [id, setEdges]
   );
 
   return (
@@ -87,11 +87,13 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               console.log(prompt);
               setLoading(true);
 
-              await fetch(`/api/gpt`, {
+              await fetch(`/api/test`, {
                 body: JSON.stringify({
                   prompt,
                   temperature: 0.1,
                   id: Number(id) + 1,
+                  apiKey: apiKey,
+                  type: 'main',
                 }),
                 method: 'POST',
               }).then((res) =>
