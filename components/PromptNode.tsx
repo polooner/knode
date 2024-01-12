@@ -7,10 +7,10 @@ import {
   Position,
   addEdge,
   useEdges,
+  useNodes,
   useReactFlow,
 } from 'reactflow';
 import { Button } from './ui/button';
-import { initialNodes } from './Flow';
 import { Separator } from './ui/separator';
 import Spinner from './ui/spinner';
 import { useKeyContext } from '@/app-context/key-context-provider';
@@ -28,19 +28,20 @@ type TextNodeProps = NodeProps & {
 const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const [prompt, setPrompt] = useState<string | null>();
   const [isLoading, setLoading] = useState<boolean>(false);
-  const { setEdges, setNodes } = useReactFlow();
+  const { setEdges, setNodes, addEdges } = useReactFlow();
   const [apiKey] = useKeyContext();
   const edges = useEdges();
+  const nodes = useNodes();
 
   const addEdgeWrapped = useCallback(
     (node: any) =>
       setEdges((eds) =>
         addEdge(
           {
-            id: `edge${id}-${node['id']}`,
+            id: `edge${id}-${node.id}`,
             source: String(id),
             //there's 2 empty objects?
-            target: String(node['id']),
+            target: String(node.id),
           },
           eds
         )
@@ -73,13 +74,14 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               data.subtopics.map((topic) => {
                 return (
                   <Button
+                    disabled={isLoading}
                     onClick={async () => {
                       console.log(prompt);
                       setLoading(true);
                       await fetch(`api/test`, {
                         body: JSON.stringify({
                           prompt: `Explain ${topic}.`,
-                          id: Number(initialNodes.length),
+                          id: Number(nodes.length),
                           apiKey,
                           type: 'subtopic',
                         }),
@@ -90,9 +92,11 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                           const node = JSON.parse(json.data);
                           node['position']['y'] = yPos - 600;
                           node['position']['x'] = xPos + 400;
+                          node['id'] = String(nodes.length + 1);
                           setNodes((nds) => nds.concat(node));
                           addEdgeWrapped(node);
                           setLoading(false);
+                          console.log('source:', id, 'target:', node['id']);
                         })
                       );
                     }}
@@ -114,7 +118,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                   <Button
                     onClick={() => {
                       const questionNode = {
-                        id: id + 3,
+                        id: String(nodes.length + 1),
                         type: 'questionNode',
                         position: { x: xPos + 400, y: 200 },
                         data: {
@@ -154,9 +158,9 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                       }).then((res) =>
                         res.json().then((json) => {
                           const node = JSON.parse(json.data);
+                          node['id'] = String(nodes.length + 1);
                           setNodes((nds) => nds.concat(node));
                           addEdgeWrapped(node);
-
                           setLoading(false);
                         })
                       );

@@ -7,6 +7,7 @@ import {
   Position,
   addEdge,
   useEdges,
+  useNodes,
   useReactFlow,
 } from 'reactflow';
 import { Button } from './ui/button';
@@ -39,21 +40,11 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const [prompt, setPrompt] = useState<string | null>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const { setNodes, setEdges } = useReactFlow();
+  const nodes = useNodes();
   const edges = useEdges();
 
   const addEdgeWrapped = useCallback(
-    (node: any) =>
-      setEdges((eds) =>
-        addEdge(
-          {
-            id: `edge${id}-${node['id']}`,
-            source: String(id),
-            //there's 2 empty objects?
-            target: String(node['id']),
-          },
-          eds
-        )
-      ),
+    (params: any) => setEdges((eds) => addEdge(params, eds)),
     [id, setEdges]
   );
 
@@ -64,7 +55,6 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           {data.question}
         </label>
         <Separator />
-
         {/* 
           Keeping this without being a form might decrease unnecessary calls caused by pressing the "Enter" button.
           If user calls enter to insert a new line, they would call the AI unnecessary.
@@ -80,18 +70,16 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           name='text'
           onChange={onChange}
         />
-
         <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
           <Button
+            disabled={isLoading}
             onClick={async () => {
               console.log(prompt);
               setLoading(true);
-
               await fetch(`/api/test`, {
                 body: JSON.stringify({
                   prompt,
                   temperature: 0.1,
-                  id: Number(id) + 1,
                   apiKey: apiKey,
                   type: 'main',
                 }),
@@ -102,14 +90,19 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                   .then((json) => {
                     const node = JSON.parse(json.data);
                     node['position']['x'] = xPos + 400;
+                    node['id'] = String(nodes.length + 1);
                     setNodes((nds) => nds.concat(node));
-                    addEdgeWrapped(node);
+                    addEdgeWrapped({
+                      id: `edge${id}-${node.id}`,
+                      source: String(id),
+                      target: String(node['id']),
+                    });
+                    setLoading(false);
                   })
                   .catch((e) => {
                     toast(e as string);
                   })
               );
-
               setLoading(false);
             }}
           >

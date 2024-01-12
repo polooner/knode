@@ -10,6 +10,8 @@ import ReactFlow, {
   Background,
   Panel,
   useReactFlow,
+  applyNodeChanges,
+  applyEdgeChanges,
 } from 'reactflow';
 import PromptNode from './PromptNode';
 import ChatNode from './ChatNode';
@@ -76,11 +78,19 @@ export const initialNodes: Node[] = [
 //   { id: 'edge-3', source: '2', target: '3' },
 // ];
 
-const initialEdges: Edge[] = [{ id: 'edge-1', source: '1', target: '2' }];
+const initialEdges: Edge[] = [];
 
 export default function Flow({ ...rest }) {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes] = useNodesState(initialNodes);
+  const [edges, setEdges] = useEdgesState(initialEdges);
+  const onNodesChange = useCallback(
+    (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    []
+  );
+  const onEdgesChange = useCallback(
+    (changes: any) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    []
+  );
   //TODO: make a PR to reactflow for better example
   //TODO: save user inputs to the flow session object on interaction
   const [rfInstance, setRfInstance] = useState(useReactFlow());
@@ -155,6 +165,7 @@ export default function Flow({ ...rest }) {
       className='w-full h-full'
       nodes={nodes}
       onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
       edges={edges}
       // onEdgesChange={onEdgesChange}
       // onConnect={onConnect}
