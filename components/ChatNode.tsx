@@ -84,25 +84,33 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                   type: 'main',
                 }),
                 method: 'POST',
-              }).then((res) =>
-                res
-                  .json()
-                  .then((json) => {
-                    const node = JSON.parse(json.data);
-                    node['position']['x'] = xPos + 400;
-                    node['id'] = String(nodes.length + 1);
-                    setNodes((nds) => nds.concat(node));
-                    addEdgeWrapped({
-                      id: `edge${id}-${node.id}`,
-                      source: String(id),
-                      target: String(node['id']),
-                    });
-                    setLoading(false);
-                  })
-                  .catch((e) => {
-                    toast(e as string);
-                  })
-              );
+              })
+                .then(async (res) => {
+                  if (res.status == 500) {
+                    const { message } = await res.json();
+                    toast.error(message);
+                  } else {
+                    res
+                      .json()
+                      .then((json) => {
+                        const node = JSON.parse(json.data);
+                        node['position']['x'] = xPos + 400;
+                        node['id'] = String(nodes.length + 1);
+                        setNodes((nds) => nds.concat(node));
+                        addEdgeWrapped({
+                          id: `edge${id}-${node.id}`,
+                          source: String(id),
+                          target: String(node['id']),
+                        });
+                        setLoading(false);
+                      })
+                      .catch((e) => {
+                        toast(e as string);
+                      });
+                  }
+                })
+                .catch((e) => toast.error(e.message));
+
               setLoading(false);
             }}
           >

@@ -27,6 +27,10 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const [isLoading, setLoading] = useState<boolean>(false);
   const { setEdges } = useReactFlow();
   const edges = useEdges();
+  const addEdgeWrapped = useCallback(
+    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    [id, setEdges]
+  );
 
   console.log(edges);
   const { setNodes } = useReactFlow();
@@ -61,40 +65,13 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               }).then((res) =>
                 res.json().then((json) => {
                   const node = JSON.parse(json.data);
-
-                  const lastKey = Object.keys(node).pop() as string;
-                  // ASIGNING LOCATION
-                  node[lastKey].position['x'] = xPos + 400;
-                  node[lastKey].position['y'] = yPos + 150;
-
-                  Object.assign(initialNodes, node);
-                  setNodes(initialNodes);
-
-                  const keyOfNewEdge = Object.keys(edges).length;
-                  const obj = {};
-                  const newEdge = {
-                    id: `edge-${id}-${node[lastKey].position['id']}`,
-                    source: id,
-                    //there's 2 empty objects?
-                    target: node[lastKey].position['id'],
-                    markerEnd: {
-                      type: MarkerType.ArrowClosed,
-                      width: 20,
-                      height: 20,
-                      color: '#000000',
-                    },
-                    // label: 'marker size and color',
-                    style: {
-                      strokeWidth: 2,
-                      stroke: '#000000',
-                    },
-                  };
-                  //@ts-expect-error
-                  obj[keyOfNewEdge] = newEdge;
-
-                  Object.assign(edges, obj);
-                  setEdges(edges);
-                  console.log('EDGES POST FETCH', edges);
+                  setNodes((nds) => nds.concat(node));
+                  addEdgeWrapped({
+                    id: `edge${id}-${node.id}`,
+                    source: String(id),
+                    target: String(node['id']),
+                  });
+                  setLoading(false);
                 })
               );
             }}
