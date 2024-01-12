@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
 import OpenAI from 'openai';
+
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
   const data = await req.json();
@@ -24,7 +27,8 @@ export async function POST(req: Request) {
         apiKey: apiKey,
       });
 
-      const chatCompletion = await openai.chat.completions.create({
+      const response = await openai.chat.completions.create({
+        stream: true,
         temperature: data.temperature,
         messages: [
           {
@@ -57,23 +61,24 @@ export async function POST(req: Request) {
       });
       console.log('server');
 
-      const chatResponse = chatCompletion.choices[0].message.content;
-      console.log(chatResponse);
-      let resultJson;
+      const stream = OpenAIStream(response);
+      return new StreamingTextResponse(stream);
 
-      if (chatResponse) {
-        resultJson = JSON.parse(chatResponse);
-        resultJson.id = String(data.id);
-      }
-      console.log(resultJson);
+      // console.log(chatResponse);
+      // let resultJson;
+
+      // resultJson = JSON.parse(chatResponse);
+      // resultJson.id = String(data.id);
+
+      // console.log(resultJson);
 
       //TODO: add status handling client-side
-      return NextResponse.json(
-        {
-          data: JSON.stringify(resultJson),
-        },
-        { status: 200 }
-      );
+      // return NextResponse.json(
+      //   {
+      //     data: JSON.stringify(resultJson),
+      //   },
+      //   { status: 200 }
+      // );
     } catch (error) {
       NextResponse.json(
         {

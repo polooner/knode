@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { Message, useCompletion } from 'ai/react';
 import {
   Handle,
   NodeProps,
@@ -38,7 +39,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const [apiKey] = useKeyContext();
   const [message, setMessage] = useState<string | null>();
   const [prompt, setPrompt] = useState<string | null>();
-  const [isLoading, setLoading] = useState<boolean>(false);
+  // const [isLoading, setLoading] = useState<boolean>(false);
   const { setNodes, setEdges } = useReactFlow();
   const nodes = useNodes();
   const edges = useEdges();
@@ -47,6 +48,43 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     [id, setEdges]
   );
+
+  function onFinish(prompt: string, completion: string) {
+    console.log(completion);
+    const node = JSON.parse(completion);
+    node['position']['x'] = xPos + 400;
+    node['id'] = String(nodes.length + 1);
+    setNodes((nds) => nds.concat(node));
+    addEdgeWrapped({
+      id: `edge${id}-${node.id}`,
+      source: String(id),
+      target: String(node['id']),
+    });
+  }
+  async function onResponse(res: Response) {
+    if (res.status == 500) {
+      const { message } = await res.json();
+      toast.error(message);
+    }
+  }
+
+  const {
+    completion,
+    input,
+    stop,
+    isLoading,
+    handleInputChange,
+    handleSubmit,
+  } = useCompletion({
+    api: '/api/gpt',
+    onFinish: onFinish,
+    onResponse,
+    body: {
+      temperature: 0,
+      apiKey: apiKey,
+      type: 'main',
+    },
+  });
 
   return (
     <div className='h-max border rounded-md border-black gap-2.5 block justify-center items-center text-left w-[350px] max-w-[350px] p-5 bg-white'>
@@ -59,65 +97,26 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           Keeping this without being a form might decrease unnecessary calls caused by pressing the "Enter" button.
           If user calls enter to insert a new line, they would call the AI unnecessary.
         */}
-        <Textarea
-          value={prompt as any}
-          onChangeCapture={(e) => {
-            setPrompt(e.currentTarget.value);
-          }}
-          rows={5}
-          className='nodrag rounded-md h-max'
-          id='text'
-          name='text'
-          onChange={onChange}
-        />
-        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
-          <Button
-            disabled={isLoading}
-            onClick={async () => {
-              console.log(prompt);
-              setLoading(true);
-              await fetch(`/api/gpt`, {
-                body: JSON.stringify({
-                  prompt,
-                  temperature: 0.1,
-                  apiKey: apiKey,
-                  type: 'main',
-                }),
-                method: 'POST',
-              })
-                .then(async (res) => {
-                  if (res.status == 500) {
-                    const { message } = await res.json();
-                    toast.error(message);
-                  } else {
-                    res
-                      .json()
-                      .then((json) => {
-                        const node = JSON.parse(json.data);
-                        node['position']['x'] = xPos + 400;
-                        node['id'] = String(nodes.length + 1);
-                        setNodes((nds) => nds.concat(node));
-                        addEdgeWrapped({
-                          id: `edge${id}-${node.id}`,
-                          source: String(id),
-                          target: String(node['id']),
-                        });
-                        setLoading(false);
-                      })
-                      .catch((e) => {
-                        toast(e as string);
-                      });
-                  }
-                })
-                .catch((e) => toast.error(e.message));
-
-              setLoading(false);
+        <form className='flex flex-col gap-2' onSubmit={handleSubmit}>
+          <Textarea
+            value={input}
+            onChangeCapture={(e) => {
+              setPrompt(e.currentTarget.value);
             }}
-          >
+            rows={5}
+            className='nodrag rounded-md h-max'
+            placeholder='Enter your prompt...'
+            id='text'
+            name='text'
+            onChange={handleInputChange}
+          />
+          <Button disabled={isLoading} type='submit'>
             Ask
             {isLoading ? <Spinner /> : null}
           </Button>
-        </div>
+        </form>
+
+        <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'></div>
       </div>
 
       {message ? <p className=' w-[200px]'>{message}</p> : null}
