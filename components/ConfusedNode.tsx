@@ -8,11 +8,15 @@ import {
   Position,
   addEdge,
   useEdges,
+  useNodes,
   useReactFlow,
 } from 'reactflow';
 import { Button } from './ui/button';
 import { initialNodes } from './Flow';
 import { Separator } from './ui/separator';
+import { useKeyContext } from '@/app-context/key-context-provider';
+import toast from 'react-hot-toast';
+import { useCompletion } from 'ai/react';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -24,13 +28,42 @@ type TextNodeProps = NodeProps & {
 const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   console.log('CONFUSED NODE X, Y POS', xPos, yPos);
   const [prompt, setPrompt] = useState<string | null>();
-  const [isLoading, setLoading] = useState<boolean>(false);
   const { setEdges } = useReactFlow();
   const edges = useEdges();
+  const nodes = useNodes();
+  const [apiKey] = useKeyContext();
   const addEdgeWrapped = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     [id, setEdges]
   );
+
+  function onFinish(completion: string) {
+    const node = {
+      id: String(nodes.length + 1),
+      type: 'confusedNode',
+      data: {
+        description: completion,
+      },
+      position: {
+        x: xPos + 400,
+        y: yPos,
+      },
+    };
+
+    setNodes((nds) => nds.concat(node));
+    addEdgeWrapped({
+      id: `edge${id}-${node.id}`,
+      source: String(id),
+      target: String(node['id']),
+    });
+  }
+
+  async function onResponse(res: Response) {
+    if (res.status == 500) {
+      const { message } = await res.json();
+      toast.error(message);
+    }
+  }
 
   console.log(edges);
   const { setNodes } = useReactFlow();
@@ -42,6 +75,18 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
     []
   );
 
+  const { input, isLoading, handleInputChange, handleSubmit } = useCompletion({
+    api: '/api/gpt',
+    onFinish: onFinish,
+    onResponse,
+    body: {
+      temperature: 0,
+      apiKey: apiKey,
+      type: 'main',
+      prompt: `I am still confused about this description: ${data.description}. in the context of ${data.topic}.`,
+    },
+  });
+
   return (
     <div className='h-max border rounded-md border-black gap-2.5 block text-left w-[350px] max-w-[350px] p-5 bg-white'>
       <div className='flex flex-col gap-2.5'>
@@ -51,33 +96,11 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         <p>{data.description}</p>
         <Separator />
         <div className='flex flex-col w-[350px] max-w-[350px] self-center items-center'>
-          <Button
-            key={id}
-            onClick={async () => {
-              console.log(prompt);
-              setLoading(true);
-              await fetch(`/api/gpt`, {
-                body: JSON.stringify({
-                  prompt: `I am still confused about this description: ${data.description}. in the context of ${data.topic}.`,
-                  temperature: 0.1,
-                }),
-                method: 'POST',
-              }).then((res) =>
-                res.json().then((json) => {
-                  const node = JSON.parse(json.data);
-                  setNodes((nds) => nds.concat(node));
-                  addEdgeWrapped({
-                    id: `edge${id}-${node.id}`,
-                    source: String(id),
-                    target: String(node['id']),
-                  });
-                  setLoading(false);
-                })
-              );
-            }}
-          >
-            Still confused
-          </Button>
+          <form className='flex flex-col gap-2' onSubmit={handleSubmit}>
+            <Button disabled={isLoading} key={id} type='submit'>
+              Still confused
+            </Button>
+          </form>
         </div>
       </div>
       <Handle

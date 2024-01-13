@@ -49,7 +49,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
     [id, setEdges]
   );
 
-  function onFinish(prompt: string, completion: string) {
+  function onFinish(completion: string) {
     console.log(completion);
     const node = JSON.parse(completion);
     node['position']['x'] = xPos + 400;
@@ -68,14 +68,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
     }
   }
 
-  const {
-    completion,
-    input,
-    stop,
-    isLoading,
-    handleInputChange,
-    handleSubmit,
-  } = useCompletion({
+  const { input, isLoading, handleInputChange, handleSubmit } = useCompletion({
     api: '/api/gpt',
     onFinish: onFinish,
     onResponse,
