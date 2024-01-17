@@ -27,22 +27,10 @@ type TextNodeProps = NodeProps & {
 //@ts-expect-error
 
 const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
-  console.log(id);
-  const onChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const { target } = evt;
-      if (target) console.log(target.value);
-    },
-    []
-  );
-
   const [apiKey] = useKeyContext();
   const [message, setMessage] = useState<string | null>();
-  const [prompt, setPrompt] = useState<string | null>();
-  // const [isLoading, setLoading] = useState<boolean>(false);
   const { setNodes, setEdges } = useReactFlow();
   const nodes = useNodes();
-  const edges = useEdges();
 
   const addEdgeWrapped = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
@@ -93,9 +81,6 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         <form className='flex flex-col gap-2' onSubmit={handleSubmit}>
           <Textarea
             value={input}
-            onChangeCapture={(e) => {
-              setPrompt(e.currentTarget.value);
-            }}
             rows={5}
             className='nodrag rounded-md h-max'
             placeholder='Enter your prompt...'
