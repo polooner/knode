@@ -103,7 +103,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
             name='text'
             onChange={handleInputChange}
           />
-          <Button disabled={isLoading} type='submit'>
+          <Button className='w-full' disabled={isLoading} type='submit'>
             Ask
             {isLoading ? <Spinner /> : null}
           </Button>
