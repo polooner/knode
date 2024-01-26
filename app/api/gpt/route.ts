@@ -20,12 +20,13 @@ export async function POST(req: Request) {
       );
   }
 
-  if (apiKey) {
+  if (apiKey != '' && apiKey != undefined && apiKey != null) {
     try {
       console.log('this is prompt', data.prompt);
       const openai = new OpenAI({
         apiKey: apiKey,
       });
+      console.log(apiKey);
 
       const response = await openai.chat.completions.create({
         stream: true,

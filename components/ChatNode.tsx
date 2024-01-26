@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Message, useCompletion } from 'ai/react';
 import {
   Handle,
   NodeProps,
   Position,
+  ReactFlowJsonObject,
   addEdge,
   useEdges,
   useNodes,
@@ -31,13 +32,20 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const [message, setMessage] = useState<string | null>();
   const { setNodes, setEdges } = useReactFlow();
   const nodes = useNodes();
+  const reactFlowInstance = useReactFlow().toObject();
+  // Create a ref to store the reactFlowInstance
+  const reactFlowInstanceRef = useRef<ReactFlowJsonObject<any, any> | null>();
+
+  useEffect(() => {
+    reactFlowInstanceRef.current = reactFlowInstance;
+  }, [reactFlowInstance]);
 
   const addEdgeWrapped = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     [id, setEdges]
   );
 
-  function onFinish(completion: string) {
+  function onFinish(prompt: string, completion: string) {
     console.log(completion);
     const node = JSON.parse(completion);
     node['position']['x'] = xPos + 400;
@@ -48,9 +56,15 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
       source: String(id),
       target: String(node['id']),
     });
+    const rf = reactFlowInstanceRef.current;
+    console.log(rf);
+    localStorage.setItem('rf_session', String(rf));
+    if (localStorage.getItem('rf_session') != null) {
+      console.log(JSON.parse(localStorage.getItem('rf_session')!));
+    }
   }
   async function onResponse(res: Response) {
-    if (res.status == 500) {
+    if (res.status > 400) {
       const { message } = await res.json();
       toast.error(message);
     }
@@ -65,6 +79,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
       apiKey: apiKey,
       type: 'main',
     },
+    onError: (err) => toast.error(err.message),
   });
 
   return (
