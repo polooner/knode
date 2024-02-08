@@ -65,8 +65,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   }
   async function onResponse(res: Response) {
     if (res.status > 400) {
-      const { message } = await res.json();
-      toast.error(message);
+      // toast.error(res.status);
     }
   }
 
@@ -79,7 +78,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
       apiKey: apiKey,
       type: 'main',
     },
-    onError: (err) => toast.error(err.message),
+    // onError: (err) => toast.error(err.message),
   });
 
   return (

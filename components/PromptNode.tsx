@@ -89,7 +89,9 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                       }).then((res) =>
                         res.json().then((json) => {
                           //TODO: abstract this into a single function across all nodes
-                          const node = JSON.parse(json.data);
+                          console.log(json);
+                          const node = json;
+                          console.log(node);
                           node['position']['y'] = yPos - 600;
                           node['position']['x'] = xPos + 400;
                           node['id'] = String(nodes.length + 1);
