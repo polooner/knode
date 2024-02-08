@@ -119,7 +119,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               data.questions.map((question) => {
                 return (
                   <Button
-                    className='min-h-fit'
+                    className='!min-h-fit inline-flex  whitespace-pre-wrap'
                     disabled={isLoading}
                     onClick={() => {
                       const questionNode = {
@@ -150,7 +150,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               data.im_confused.map((item) => {
                 return (
                   <Button
-                    className='min-h-fit'
+                    className='!min-h-fit'
                     disabled={isLoading}
                     key={item}
                     onClick={async () => {
