@@ -74,6 +74,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               data.subtopics.map((topic) => {
                 return (
                   <Button
+                    className='min-h-fit'
                     disabled={isLoading}
                     onClick={async () => {
                       console.log(prompt);
@@ -118,6 +119,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               data.questions.map((question) => {
                 return (
                   <Button
+                    className='min-h-fit'
                     disabled={isLoading}
                     onClick={() => {
                       const questionNode = {
@@ -148,6 +150,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               data.im_confused.map((item) => {
                 return (
                   <Button
+                    className='min-h-fit'
                     disabled={isLoading}
                     key={item}
                     onClick={async () => {

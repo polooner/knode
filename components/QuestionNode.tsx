@@ -40,17 +40,20 @@ const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
     }
   }
 
-  const { isLoading, completion, handleSubmit } = useCompletion({
-    //TODO: one api for all calls or specific?
-    api: '/api/feedback',
-    onResponse,
-    body: {
-      temperature: 0,
-      apiKey: apiKey,
-      type: 'main',
-      prompt: `question: ${data.q}, student's answer: ${answer}`,
-    },
-  });
+  function onFinish(prompt: string, completion: string) {}
+
+  const { isLoading, completion, handleSubmit, input, handleInputChange } =
+    useCompletion({
+      api: '/api/feedback',
+      onFinish: onFinish,
+      onResponse,
+      body: {
+        temperature: 0,
+        apiKey: apiKey,
+        type: 'main',
+        question: data.q,
+      },
+    });
 
   return (
     <div className='h-max border rounded-md border-black gap-2.5 block justify-center items-center text-left w-[350px] max-w-[350px] p-5 bg-white'>
@@ -61,29 +64,29 @@ const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
         <Separator />
         <form className='flex flex-col gap-2' onSubmit={handleSubmit}>
           <Textarea
-            value={answer}
-            rows={10}
+            value={input}
+            rows={6}
+            placeholder='Enter your response'
             id='text'
             name='text'
-            onChange={handleChange}
+            onChange={handleInputChange}
             className='nodrag resize-none rounded-md h-max'
           />
 
-          <div className='flex flex-col w-[350px] gap-2.5 max-w-[350px] self-center place-items-center'>
-            <Button className='gap-10' key={'questionbtn1'} type='submit'>
-              Check my answer!
-            </Button>
-            <Button
-              key={'questionbtn2'}
-              onClick={() => {
-                setShowAnswer(!isAnswer);
-              }}
-            >
-              Show answer
-            </Button>
-          </div>
+          <Button className='w-full' disabled={isLoading} type='submit'>
+            Check my answer!
+            {isLoading ? <Spinner /> : null}
+          </Button>
         </form>
-        {isLoading ? <Spinner /> : null}
+        <Button
+          className='w-full'
+          onClick={() => {
+            setShowAnswer(!isAnswer);
+          }}
+        >
+          Show answer
+        </Button>
+
         {isAnswer ? (
           <label className='w-full'>
             Answer:
