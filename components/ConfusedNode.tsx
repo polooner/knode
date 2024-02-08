@@ -67,23 +67,17 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
 
   console.log(edges);
   const { setNodes } = useReactFlow();
-  const onChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const { target } = evt;
-      if (target) console.log(target.value);
-    },
-    []
-  );
 
   const { input, isLoading, handleInputChange, handleSubmit } = useCompletion({
-    api: '/api/gpt',
+    api: '/api/confused',
     onFinish: onFinish,
     onResponse,
     body: {
       temperature: 0,
       apiKey: apiKey,
       type: 'main',
-      prompt: `I am still confused about this description: ${data.description}. in the context of ${data.topic}.`,
+      explanation: data.description,
+      topic: data.topic,
     },
   });
 

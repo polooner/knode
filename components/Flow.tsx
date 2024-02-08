@@ -185,7 +185,11 @@ export default function Flow({ ...rest }) {
         </div>
       </Panel>
       <Panel position='top-left'>
-        <Link target='_blank' className='hover:underline' href={'/'}>
+        <Link
+          target='_blank'
+          className='hover:underline'
+          href={'https://forms.gle/jw359Fb1vGXR8t2a6'}
+        >
           😇 Enjoying knode? Help us with this short Google Form &rarr;
         </Link>
       </Panel>

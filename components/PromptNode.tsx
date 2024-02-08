@@ -14,6 +14,7 @@ import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import Spinner from './ui/spinner';
 import { useKeyContext } from '@/app-context/key-context-provider';
+import { useCompletion } from 'ai/react';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -40,7 +41,6 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
           {
             id: `edge${id}-${node.id}`,
             source: String(id),
-            //there's 2 empty objects?
             target: String(node.id),
           },
           eds
@@ -51,13 +51,34 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
 
   console.log(edges);
 
-  const onChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const { target } = evt;
-      if (target) console.log(target.value);
+  const {
+    completion,
+    isLoading: isCompletionLoading,
+    handleSubmit,
+  } = useCompletion({
+    api: '/api/confused',
+    // onFinish: onFinish,
+    body: {
+      temperature: 0,
+      apiKey: apiKey,
+      type: 'main',
+      explanation: data.description,
+      topic: data.topic,
     },
-    []
-  );
+    onFinish: () => {
+      const confusedNode = {
+        id: String(nodes.length + 1),
+        type: 'confusedNode',
+        data: {
+          description: completion,
+        },
+        position: { x: xPos + 400, y: yPos + 800 },
+      };
+
+      setNodes((nds) => nds.concat(confusedNode));
+      addEdgeWrapped(confusedNode);
+    },
+  });
 
   return (
     <div className='h-max border rounded-md border-black gap-2.5 block justify-center items-center text-left w-[350px] max-w-[350px] p-5 bg-white'>
@@ -156,20 +177,19 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                     onClick={async () => {
                       console.log(prompt);
                       setLoading(true);
-                      await fetch('/api/gpt', {
+                      await fetch('/api/confused', {
                         body: JSON.stringify({
-                          prompt: `I am confused about ${item}. in terms of ${data.topic}.`,
-                          type: 'confused',
+                          prompt: `I am confused about ${item}. in context of ${data.topic}.`,
+                          apiKey: apiKey,
                         }),
                         method: 'POST',
                       }).then((res) =>
                         res.json().then((json) => {
-                          const rephrasedExplanation = json.data;
                           const confusedNode = {
                             id: String(nodes.length + 1),
                             type: 'confusedNode',
                             data: {
-                              description: rephrasedExplanation,
+                              description: json.data,
                             },
                             position: { x: xPos + 400, y: yPos + 800 },
                           };

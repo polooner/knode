@@ -1,8 +1,5 @@
 import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-
-// import { Ollama } from 'langchain/llms/ollama';
 
 export async function POST(req: Request) {
   const data = await req.json();

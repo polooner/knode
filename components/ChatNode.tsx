@@ -49,6 +49,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
     console.log(completion);
     const node = JSON.parse(completion);
     node['position']['x'] = xPos + 400;
+    node['position']['y'] = yPos - 600;
     node['id'] = String(nodes.length + 1);
     setNodes((nds) => nds.concat(node));
     addEdgeWrapped({
@@ -72,6 +73,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const { input, isLoading, handleInputChange, handleSubmit } = useCompletion({
     api: '/api/gpt',
     onFinish: onFinish,
+
     onResponse,
     body: {
       temperature: 0,
