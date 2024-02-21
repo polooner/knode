@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import 'reactflow/dist/style.css';
 import { Toaster } from 'react-hot-toast';
 import { KeyProvider } from '@/app-context/key-context-provider';
+import { SubtopicsProvider } from '@/app-context/subtopics-context-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,7 +23,10 @@ export default function RootLayout({
     <html lang='en'>
       <body className={twMerge(inter.className)}>
         <Toaster />
-        <KeyProvider>{children}</KeyProvider>
+
+        <KeyProvider>
+          <SubtopicsProvider>{children}</SubtopicsProvider>
+        </KeyProvider>
       </body>
     </html>
   );

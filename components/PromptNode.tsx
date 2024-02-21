@@ -15,6 +15,7 @@ import { Separator } from './ui/separator';
 import Spinner from './ui/spinner';
 import { useKeyContext } from '@/app-context/key-context-provider';
 import { useCompletion } from 'ai/react';
+import { useSubtopicsContext } from '@/app-context/subtopics-context-provider';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -29,6 +30,7 @@ type TextNodeProps = NodeProps & {
 const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const [prompt, setPrompt] = useState<string | null>();
   const [isLoading, setLoading] = useState<boolean>(false);
+  const { subtopics } = useSubtopicsContext();
   const { setEdges, setNodes, addEdges } = useReactFlow();
   const { apiKey } = useKeyContext();
   const edges = useEdges();
@@ -103,6 +105,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
                       await fetch(`api/gpt`, {
                         body: JSON.stringify({
                           prompt: `Explain ${topic}.`,
+                          prevSubtopics: subtopics,
                           id: Number(nodes.length),
                           apiKey,
                           type: 'subtopic',
@@ -140,7 +143,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
               data.questions.map((question) => {
                 return (
                   <Button
-                    className='!min-h-fit inline-flex  whitespace-pre-wrap'
+                    className='!min-h-fit '
                     disabled={isLoading}
                     onClick={() => {
                       const questionNode = {

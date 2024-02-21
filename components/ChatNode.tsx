@@ -18,6 +18,7 @@ import Spinner from './ui/spinner';
 import { Separator } from './ui/separator';
 import toast from 'react-hot-toast';
 import { useKeyContext } from '@/app-context/key-context-provider';
+import { useSubtopicsContext } from '@/app-context/subtopics-context-provider';
 
 type TextNodeProps = NodeProps & {
   title: string;
@@ -29,6 +30,7 @@ type TextNodeProps = NodeProps & {
 
 const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const { apiKey } = useKeyContext();
+  const { setSubtopics } = useSubtopicsContext();
   const [message, setMessage] = useState<string | null>();
   const { setNodes, setEdges } = useReactFlow();
   const nodes = useNodes();
@@ -57,6 +59,7 @@ const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
       source: String(id),
       target: String(node['id']),
     });
+    setSubtopics((prev) => prev?.concat(node['data']['subtopics']));
     const rf = reactFlowInstanceRef.current;
     console.log(rf);
     localStorage.setItem('rf_session', String(rf));

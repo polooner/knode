@@ -64,7 +64,7 @@ export default function ApiKeyDialog() {
               <Input
                 onChange={(e) => setInput(e.target.value)}
                 id='apikey'
-                defaultValue={apiKey}
+                value={apiKey as string}
                 placeholder='key'
                 className='col-span-3'
               />

@@ -177,7 +177,9 @@ export default function Flow({ ...rest }) {
     >
       <Panel position='top-right'>
         <div className='flex space-x-2 flex-row'>
-          <Button onClick={onSave}>Save Session</Button>
+          <Button variant={'defaultNoWrap'} onClick={onSave}>
+            Save Session
+          </Button>
           {/* TODO: Open a modal to let user upload a file 
             <Button onClick={onRestore}>Load a Session</Button>
           */}
