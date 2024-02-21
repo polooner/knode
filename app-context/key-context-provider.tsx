@@ -1,14 +1,28 @@
 'use client';
 
-import { PropsWithChildren, createContext, useContext, useState } from 'react';
+import {
+  Dispatch,
+  PropsWithChildren,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from 'react';
 
-type KeyContextType = [string, (theme: string) => void];
+type KeyContextType = {
+  apiKey: string | null;
+  setApiKey: Dispatch<SetStateAction<string | null>>;
+};
 export const KeyContext = createContext<KeyContextType | undefined>(undefined);
 
 export const KeyProvider = ({ children }: PropsWithChildren<{}>) => {
-  const apiKey = useState('');
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const value = {
+    apiKey: apiKey,
+    setApiKey: setApiKey,
+  };
 
-  return <KeyContext.Provider value={apiKey}>{children}</KeyContext.Provider>;
+  return <KeyContext.Provider value={value}>{children}</KeyContext.Provider>;
 };
 
 export const useKeyContext = () => {

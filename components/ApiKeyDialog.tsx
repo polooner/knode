@@ -20,14 +20,16 @@ export default function ApiKeyDialog() {
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState('');
 
-  const [apiKey, setApiKey] = useKeyContext();
+  const { apiKey, setApiKey } = useKeyContext();
   console.log('key in dialog is', apiKey);
 
   useEffect(() => {
-    if (apiKey == '' || apiKey == undefined || apiKey == null) {
-      setOpen(true);
-    }
-    console.log('key in effect', apiKey);
+    const savedKey = localStorage.getItem('openai_api_key');
+    if (savedKey) {
+      setApiKey(savedKey);
+    } else setOpen(true);
+
+    console.log('key in useEffect', apiKey);
   }, [apiKey]);
 
   async function handleSubmit(e: FormEvent) {
@@ -36,7 +38,7 @@ export default function ApiKeyDialog() {
 
     setApiKey(input);
     console.log(localStorage.getItem('openai_api_key'));
-    setOpen(false);
+    setOpen(() => false);
   }
 
   return (

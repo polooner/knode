@@ -28,7 +28,7 @@ type TextNodeProps = NodeProps & {
 //@ts-expect-error
 
 const ChatNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
-  const [apiKey] = useKeyContext();
+  const { apiKey } = useKeyContext();
   const [message, setMessage] = useState<string | null>();
   const { setNodes, setEdges } = useReactFlow();
   const nodes = useNodes();

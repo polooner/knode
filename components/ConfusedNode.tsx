@@ -31,7 +31,7 @@ const ConfusedNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const { setEdges } = useReactFlow();
   const edges = useEdges();
   const nodes = useNodes();
-  const [apiKey] = useKeyContext();
+  const { apiKey } = useKeyContext();
   const addEdgeWrapped = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     [id, setEdges]

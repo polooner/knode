@@ -8,7 +8,7 @@ import React, { useEffect } from 'react';
 import { useKeyContext } from '@/app-context/key-context-provider';
 
 export default function Page() {
-  const [apiKey, setApiKey] = useKeyContext();
+  const { apiKey, setApiKey } = useKeyContext();
   useEffect(() => {
     const localStorageKey = localStorage.getItem('openai_api_key');
     if (localStorageKey) {

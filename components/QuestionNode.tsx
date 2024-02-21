@@ -20,7 +20,7 @@ type TextNodeProps = NodeProps & {
 const QuestionNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const [isAnswer, setShowAnswer] = useState<boolean>();
   const [answer, setAnswer] = useState<string>('');
-  const [apiKey] = useKeyContext();
+  const { apiKey } = useKeyContext();
   const edges = useEdges();
 
   console.log(edges);

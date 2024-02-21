@@ -30,7 +30,7 @@ const PromptNode: FC<TextNodeProps> = ({ data, xPos, yPos, id }) => {
   const [prompt, setPrompt] = useState<string | null>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const { setEdges, setNodes, addEdges } = useReactFlow();
-  const [apiKey] = useKeyContext();
+  const { apiKey } = useKeyContext();
   const edges = useEdges();
   const nodes = useNodes();
 
