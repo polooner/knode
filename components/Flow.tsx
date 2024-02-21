@@ -188,7 +188,7 @@ export default function Flow({ ...rest }) {
         <Link
           target='_blank'
           className='hover:underline'
-          href={'https://forms.gle/jw359Fb1vGXR8t2a6'}
+          href={'https://forms.gle/FFBaktgRsARqEEoq6'}
         >
           😇 Enjoying knode? Help us with this short Google Form &rarr;
         </Link>
