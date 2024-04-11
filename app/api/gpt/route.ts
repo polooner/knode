@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
+import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
 export const runtime = 'edge';
@@ -26,21 +26,21 @@ export async function POST(req: Request) {
       );
   }
 
-  if (apiKey != '' && apiKey != undefined && apiKey != null) {
-    try {
-      console.log('this is prompt', data.prompt);
-      const openai = new OpenAI({
-        apiKey: apiKey,
-      });
-      console.log(apiKey);
+  // if (apiKey != '' && apiKey != undefined && apiKey != null) {
+  try {
+    console.log('this is prompt', data.prompt);
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    console.log(apiKey);
 
-      const response = await openai.chat.completions.create({
-        stream: true,
-        temperature: data.temperature,
-        messages: [
-          {
-            role: 'system',
-            content: `Respond to only Computer Science DSA questions in JSON format. Your JSON response should include four elements: 
+    const response = await openai.chat.completions.create({
+      stream: true,
+      temperature: data.temperature,
+      messages: [
+        {
+          role: 'system',
+          content: `Respond to only Computer Science DSA questions in JSON format. Your JSON response should include four elements: 
       "Topic", "Description", "Subtopics" (try to make 3), and "Questions" (an array of 3 objects), suitable for graph node creation in a 
       UI. Use only "promptNode" type for explanations. Do not repeat these previous subtopics: ${prevSubtopics}. If a user asks for clarification or feedback, reply only with a rephrased, better explanation of the given
       description they provide or feedback.
@@ -58,50 +58,51 @@ export async function POST(req: Request) {
       }
       }
       `,
-          },
-          {
-            role: 'user',
-            content: data.prompt,
-          },
-        ],
-        model: 'gpt-4',
-      });
-      console.log('server');
-
-      const stream = OpenAIStream(response);
-      return new StreamingTextResponse(stream);
-
-      // console.log(chatResponse);
-      // let resultJson;
-
-      // resultJson = JSON.parse(chatResponse);
-      // resultJson.id = String(data.id);
-
-      // console.log(resultJson);
-
-      //TODO: add status handling client-side
-      // return NextResponse.json(
-      //   {
-      //     data: JSON.stringify(resultJson),
-      //   },
-      //   { status: 200 }
-      // );
-    } catch (error) {
-      NextResponse.json(
-        {
-          message: 'Something went wrong with OpenAI',
         },
-        { status: 500 }
-      );
-    }
-  } else {
-    return NextResponse.json(
+        {
+          role: 'user',
+          content: data.prompt,
+        },
+      ],
+      model: 'gpt-4',
+    });
+    console.log('server');
+
+    const stream = OpenAIStream(response);
+    return new StreamingTextResponse(stream);
+
+    // console.log(chatResponse);
+    // let resultJson;
+
+    // resultJson = JSON.parse(chatResponse);
+    // resultJson.id = String(data.id);
+
+    // console.log(resultJson);
+
+    //TODO: add status handling client-side
+    // return NextResponse.json(
+    //   {
+    //     data: JSON.stringify(resultJson),
+    //   },
+    //   { status: 200 }
+    // );
+  } catch (error) {
+    NextResponse.json(
       {
-        message: 'Please provide an OpenAI key.',
+        message: 'Something went wrong with OpenAI',
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
+//    else {
+//     return NextResponse.json(
+//       {
+//         message: 'Please provide an OpenAI key.',
+//       },
+//       {
+//         status: 500,
+//       }
+//     );
+//   }
+// }

@@ -1,26 +1,25 @@
+import Link from 'next/link';
+import { useCallback, useMemo, useState } from 'react';
 import ReactFlow, {
-  Node,
-  useNodesState,
-  Edge,
+  Background,
   ConnectionLineType,
-  useEdgesState,
+  Controls,
+  Edge,
   MarkerType,
   MiniMap,
-  Controls,
-  Background,
+  Node,
   Panel,
-  useReactFlow,
-  applyNodeChanges,
   applyEdgeChanges,
+  applyNodeChanges,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
 } from 'reactflow';
-import PromptNode from './PromptNode';
 import ChatNode from './ChatNode';
 import ConfusedNode from './ConfusedNode';
+import PromptNode from './PromptNode';
 import QuestionNode from './QuestionNode';
-import { useCallback, useMemo, useState } from 'react';
 import { Button } from './ui/button';
-import Link from 'next/link';
-import ApiKeyDialog from './ApiKeyDialog';
 
 export const initialNodes: Node[] = [
   {
@@ -183,7 +182,7 @@ export default function Flow({ ...rest }) {
           {/* TODO: Open a modal to let user upload a file 
             <Button onClick={onRestore}>Load a Session</Button>
           */}
-          <ApiKeyDialog />
+          {/* <ApiKeyDialog /> */}
         </div>
       </Panel>
       <Panel position='top-left'>
